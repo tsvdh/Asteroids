@@ -2,30 +2,6 @@
 
 A [libGDX](https://libgdx.com/) project generated with [gdx-liftoff](https://github.com/libgdx/gdx-liftoff).
 
-## Features
-- Normal Asteroids
-  - Spaceship with movement and physics
-    - 'w' to fly forward
-    - 'a' and 'd' to rotate
-    - Momentum decays over time
-    - Lose a life when hit
-      - Three lives
-  - Laser shooting
-    - 'spacebar' to shoot laser
-  - Destructible asteroids
-    - Three sizes, upon laser hit split into smaller
-  - Aliens
-    - Appear after reaching certain score
-    - Shoot at player
-    - Killed upon hit
-  - Collision
-    - Everything collides with each other
-  - Gain score for:
-    - Time
-    - Asteroids destroyed
-    - Aliens killed
-  - All items warp to opposite side of screen
-
 ## Platforms
 
 - `core`: Main module with the application logic shared by all platforms.
