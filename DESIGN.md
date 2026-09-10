@@ -1,8 +1,6 @@
 ### Features
 - Normal Asteroids
     - Spaceship with movement and physics
-        - 'w' to fly forward
-        - 'a' and 'd' to rotate
         - Momentum decays over time
         - Lose a life when hit
             - Three lives
@@ -21,3 +19,14 @@
         - Asteroids destroyed
         - Aliens killed
     - All items warp to opposite side of screen
+
+### Controls
+- Screen is 100 by 100
+- Ship is 3 wide
+- 'w' to add movement in direction of orientation
+  - 1m/s^2 acceleration
+- 'a' and 'd' to rotate orientation
+  - 360deg in 1 sec
+- movement decays over time
+  - decays 30% per second
+  - max of 20m/s
