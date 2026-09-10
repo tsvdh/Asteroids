@@ -66,12 +66,21 @@ public abstract class GameObject {
         sprite.draw(batch);
     }
 
-    public void logic() {
-        setPos(pos.add(movement));
+    private static float handleOutOfBounds(float val) {
+        float bufferSize = 5;
+        float worldSize = 100;
+        float totalDist = worldSize + 2 * bufferSize;
+        if (val < -bufferSize)
+            val += totalDist;
+        if (val > worldSize + bufferSize)
+            val -= totalDist;
+        return val;
     }
 
-
-
-
-
+    public void logic() {
+        pos.add(movement);
+        pos.x = handleOutOfBounds(pos.x);
+        pos.y = handleOutOfBounds(pos.y);
+        setPos(pos);
+    }
 }
