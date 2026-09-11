@@ -12,14 +12,16 @@ public class Ship extends RoundGameObject {
     private final Texture thrustTexture;
     private Vector2 forward;
     private boolean thrust;
+    private int lives;
 
     public Ship(Map<String, Texture> textures) {
         super(textures);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
-        forward = Vector2.Y;
+        forward = new Vector2(0, 1);
         thrust = false;
         setScale(3);
         setPos(new Vector2(50, 50));
+        lives = 3;
     }
 
     @Override
@@ -68,5 +70,18 @@ public class Ship extends RoundGameObject {
         laser.setPos(pos.cpy().add(forward.cpy().setLength(3)));
         laser.setMovement(forward.cpy().setLength(100));
         return laser;
+    }
+
+    public boolean notGameOver() {
+        return lives > 0;
+    }
+
+    @Override
+    public void destroy() {
+        lives--;
+        setPos(new Vector2(50, 50));
+        setMovement(new Vector2(0, 0));
+        forward = new Vector2(0, 1);
+        sprite.setRotation(0);
     }
 }

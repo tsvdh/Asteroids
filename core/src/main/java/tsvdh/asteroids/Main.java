@@ -58,19 +58,21 @@ public class Main extends ApplicationAdapter {
     }
 
     private void input() {
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ship.thrust();
-        } else {
-            ship.noThrust();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            ship.rotateCounterClockwise();
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            ship.rotateClockwise();
-        }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-            shipLasers.add(ship.shootLaser(textures));
+        if (ship.notGameOver()) {
+            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+                ship.thrust();
+            } else {
+                ship.noThrust();
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+                ship.rotateCounterClockwise();
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+                ship.rotateClockwise();
+            }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+                shipLasers.add(ship.shootLaser(textures));
+            }
         }
     }
 
@@ -82,10 +84,8 @@ public class Main extends ApplicationAdapter {
 
         handleCollisions();
 
-        if (ship.isDestroyed()) {
-
-        }
         shipLasers.removeIf(GameObject::isDestroyed);
+        asteroids.removeIf(GameObject::isDestroyed);
     }
 
     private void draw() {
@@ -94,7 +94,8 @@ public class Main extends ApplicationAdapter {
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
 
-        ship.draw(spriteBatch);
+        if (ship.notGameOver())
+            ship.draw(spriteBatch);
         shipLasers.forEach(laser ->laser.draw(spriteBatch));
         asteroids.forEach(asteroid -> asteroid.draw(spriteBatch));
 
@@ -102,7 +103,17 @@ public class Main extends ApplicationAdapter {
     }
 
     private void handleCollisions() {
+        asteroids.forEach(asteroid -> {
+            if (ship.notGameOver() && asteroid.getCollider().overlaps(ship.getCollider()))
+                ship.destroy();
 
+            shipLasers.forEach(laser -> {
+                if (asteroid.getCollider().overlaps(laser.getCollider())) {
+                    asteroid.destroy();
+                    laser.destroy();
+                }
+            });
+        });
     }
 
     private void loadTextures(FileHandle file) {

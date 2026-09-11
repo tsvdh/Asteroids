@@ -16,8 +16,7 @@ public abstract class RoundGameObject extends GameObject {
         collider = new Circle(0, 0, 0.5f);
     }
 
-    @Override
-    public final Shape2D getCollider() {
+    public final Circle getCollider() {
         return collider;
     }
 

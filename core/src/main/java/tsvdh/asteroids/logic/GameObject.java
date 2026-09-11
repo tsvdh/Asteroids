@@ -52,8 +52,6 @@ public abstract class GameObject {
 
     abstract String getTextureName();
 
-    public abstract Shape2D getCollider();
-
     public void setPos(Vector2 newPos) {
         pos = newPos;
         sprite.setCenter(pos.x, pos.y);
@@ -66,6 +64,10 @@ public abstract class GameObject {
     public void setScale(float newScale) {
         this.scale = newScale;
         this.sprite.setScale(newScale);
+    }
+
+    public void destroy() {
+        destroyed = true;
     }
 
     public void draw(SpriteBatch batch) {
