@@ -29,4 +29,6 @@
   - 360deg in 1 sec
 - movement decays over time
   - decays 30% per second
-  - max of 20m/s
+- 'enter' to shoot a laser
+  - 100m/s laser speed
+  - 1sec lifetime

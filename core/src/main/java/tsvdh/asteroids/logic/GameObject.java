@@ -15,9 +15,10 @@ public abstract class GameObject {
     Vector2 pos;
     Vector2 movement;
     float scale;
+    boolean destroyed = false;
 
     public GameObject(Map<String, Texture> textures) {
-        texture = getTexture(textures);
+        texture = textures.get(getTextureName());
         sprite = getSprite(texture);
         pos = new Vector2();
         movement = new Vector2();
@@ -36,6 +37,10 @@ public abstract class GameObject {
         return scale;
     }
 
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
     Sprite getSprite(Texture texture) {
         Sprite sprite = new Sprite(texture);
         float ratio = sprite.getHeight() / sprite.getWidth();
@@ -44,7 +49,7 @@ public abstract class GameObject {
         return sprite;
     }
 
-    abstract Texture getTexture(Map<String, Texture> textures);
+    abstract String getTextureName();
 
     public abstract Shape2D getCollider();
 
@@ -83,4 +88,6 @@ public abstract class GameObject {
         pos.y = handleOutOfBounds(pos.y);
         setPos(pos);
     }
+
+
 }

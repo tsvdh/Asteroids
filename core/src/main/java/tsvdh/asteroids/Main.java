@@ -6,13 +6,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import tsvdh.asteroids.logic.GameObject;
+import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -24,8 +27,7 @@ public class Main extends ApplicationAdapter {
     Map<String, Texture> textures;
 
     Ship ship;
-
-    Sprite test;
+    Collection<Laser> shipLasers;
 
     @Override
     public void create() {
@@ -34,7 +36,7 @@ public class Main extends ApplicationAdapter {
         textures = new HashMap<>();
         loadTextures(Gdx.files.internal("assets"));
         ship = new Ship(textures);
-        test = new Sprite(textures.get("assets/ship.png"));
+        shipLasers = new LinkedList<>();
     }
 
     @Override
@@ -61,10 +63,19 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             ship.rotateClockwise();
         }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            shipLasers.add(ship.shootLaser(textures));
+        }
     }
 
     private void logic() {
         ship.logic();
+        shipLasers.forEach(Laser::logic);
+
+        if (ship.isDestroyed()) {
+
+        }
+        shipLasers.removeIf(GameObject::isDestroyed);
     }
 
     private void draw() {
@@ -74,6 +85,7 @@ public class Main extends ApplicationAdapter {
         spriteBatch.begin();
 
         ship.draw(spriteBatch);
+        shipLasers.forEach(laser ->laser.draw(spriteBatch));
 
         spriteBatch.end();
     }

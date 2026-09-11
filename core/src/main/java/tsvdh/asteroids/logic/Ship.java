@@ -23,8 +23,8 @@ public class Ship extends RoundGameObject {
     }
 
     @Override
-    protected Texture getTexture(Map<String, Texture> textures) {
-        return textures.get("assets/ship.png");
+    String getTextureName() {
+        return "assets/ship.png";
     }
 
     @Override
@@ -59,10 +59,14 @@ public class Ship extends RoundGameObject {
 
     @Override
     public void logic() {
-        getMovement()
-            .scl(1f - 0.3f * Gdx.graphics.getDeltaTime())
-            .clamp(0, 20);
-
+        getMovement().scl(1f - 0.3f * Gdx.graphics.getDeltaTime());
         super.logic();
+    }
+
+    public Laser shootLaser(Map<String, Texture> textures) {
+        var laser = new Laser(textures);
+        laser.setPos(pos.cpy().add(forward.cpy().setLength(3)));
+        laser.setMovement(forward.cpy().setLength(100 * Gdx.graphics.getDeltaTime()));
+        return laser;
     }
 }
