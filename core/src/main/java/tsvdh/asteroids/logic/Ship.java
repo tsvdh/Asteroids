@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Ship extends RoundGameObject {
 
-    private Texture thrustTexture;
+    private final Texture thrustTexture;
     private Vector2 forward;
     private boolean thrust;
 

@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import tsvdh.asteroids.logic.Asteroid;
+import tsvdh.asteroids.logic.AsteroidSpawner;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
@@ -28,6 +30,8 @@ public class Main extends ApplicationAdapter {
 
     Ship ship;
     Collection<Laser> shipLasers;
+    AsteroidSpawner asteroidSpawner;
+    Collection<Asteroid> asteroids;
 
     @Override
     public void create() {
@@ -37,6 +41,8 @@ public class Main extends ApplicationAdapter {
         loadTextures(Gdx.files.internal("assets"));
         ship = new Ship(textures);
         shipLasers = new LinkedList<>();
+        asteroidSpawner = new AsteroidSpawner();
+        asteroids = new LinkedList<>();
     }
 
     @Override
@@ -71,6 +77,10 @@ public class Main extends ApplicationAdapter {
     private void logic() {
         ship.logic();
         shipLasers.forEach(Laser::logic);
+        asteroidSpawner.spawn(asteroids, textures);
+        asteroids.forEach(Asteroid::logic);
+
+        handleCollisions();
 
         if (ship.isDestroyed()) {
 
@@ -86,8 +96,13 @@ public class Main extends ApplicationAdapter {
 
         ship.draw(spriteBatch);
         shipLasers.forEach(laser ->laser.draw(spriteBatch));
+        asteroids.forEach(asteroid -> asteroid.draw(spriteBatch));
 
         spriteBatch.end();
+    }
+
+    private void handleCollisions() {
+
     }
 
     private void loadTextures(FileHandle file) {

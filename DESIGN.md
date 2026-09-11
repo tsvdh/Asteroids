@@ -32,3 +32,8 @@
 - 'enter' to shoot a laser
   - 100m/s laser speed
   - 1sec lifetime
+- Asteroids spawn randomly on boundary
+  - speed 5m/s
+  - sizes: 10 -> 6 -> 3
+  - amount: 1 -> 2 -> 2
+  - spawn until 10 asteroids
