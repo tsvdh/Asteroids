@@ -1,5 +1,6 @@
 package tsvdh.asteroids.logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -83,7 +84,7 @@ public abstract class GameObject {
     }
 
     public void logic() {
-        pos.add(movement);
+        pos.add(movement.cpy().scl(Gdx.graphics.getDeltaTime()));
         pos.x = handleOutOfBounds(pos.x);
         pos.y = handleOutOfBounds(pos.y);
         setPos(pos);

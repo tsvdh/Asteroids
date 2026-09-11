@@ -43,7 +43,7 @@ public class Ship extends RoundGameObject {
     }
 
     public void thrust() {
-        getMovement().add(forward.cpy().scl(1 * Gdx.graphics.getDeltaTime()));
+        getMovement().add(forward.cpy().scl(1));
         if (!thrust) {
             sprite.setTexture(thrustTexture);
             thrust = true;
@@ -66,7 +66,7 @@ public class Ship extends RoundGameObject {
     public Laser shootLaser(Map<String, Texture> textures) {
         var laser = new Laser(textures);
         laser.setPos(pos.cpy().add(forward.cpy().setLength(3)));
-        laser.setMovement(forward.cpy().setLength(100 * Gdx.graphics.getDeltaTime()));
+        laser.setMovement(forward.cpy().setLength(100));
         return laser;
     }
 }

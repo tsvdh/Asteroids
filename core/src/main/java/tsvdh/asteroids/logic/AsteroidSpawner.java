@@ -23,7 +23,7 @@ public class AsteroidSpawner {
         var asteroid = new Asteroid(textures, 10);
         Vector2 spawnPos = getSpawn();
         asteroid.setPos(spawnPos);
-        asteroid.setMovement(getDir(spawnPos).setLength(5 * Gdx.graphics.getDeltaTime()));
+        asteroid.setMovement(getDir(spawnPos).setLength(5));
         asteroids.add(asteroid);
     }
 
