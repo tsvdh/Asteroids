@@ -8,16 +8,24 @@ import java.util.Random;
 
 public class Asteroid extends RoundGameObject {
 
-    private static final Random textureRng = new Random();
+    private static final float[] SIZES = {100, 60, 30};
 
-    public Asteroid(Map<String, Texture> textures, float size, Vector2 pos) {
+    private static final Random textureRng = new Random();
+    private final int type;
+
+    public Asteroid(Map<String, Texture> textures, Vector2 pos, int type) {
         super(textures);
-        setSize(size);
+        setSize(SIZES[type]);
         setPos(pos);
+        this.type = type;
     }
 
     @Override
     String getTextureName() {
         return String.format("assets/asteroids/asteroid%s.png", textureRng.nextInt(5) + 1);
+    }
+
+    public int getType() {
+        return type;
     }
 }

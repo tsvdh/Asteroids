@@ -168,6 +168,8 @@ public class Main extends ApplicationAdapter {
     }
 
     private void handleCollisions() {
+        Collection<Asteroid> newAsteroids = new LinkedList<>();
+
         asteroids.forEach(asteroid -> {
             if (notGameOver() && asteroid.getCollider().overlaps(ship.getCollider())) {
                 lives--;
@@ -179,9 +181,12 @@ public class Main extends ApplicationAdapter {
                     score += 10;
                     asteroid.destroy();
                     laser.destroy();
+                    asteroidSpawner.spawnFromDestroyed(asteroid, newAsteroids, textures);
                 }
             });
         });
+
+        asteroids.addAll(newAsteroids);
     }
 
     private void loadTextures(FileHandle file) {

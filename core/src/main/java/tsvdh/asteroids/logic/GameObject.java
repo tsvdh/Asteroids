@@ -38,6 +38,14 @@ public abstract class GameObject {
         return size;
     }
 
+    public float getSize() {
+        return size;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
+
     public boolean isDestroyed() {
         return destroyed;
     }
@@ -89,6 +97,4 @@ public abstract class GameObject {
         pos.y = handleOutOfBounds(pos.y);
         setPos(pos);
     }
-
-
 }

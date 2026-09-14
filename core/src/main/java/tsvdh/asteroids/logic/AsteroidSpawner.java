@@ -1,6 +1,5 @@
 package tsvdh.asteroids.logic;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,8 +12,6 @@ import static tsvdh.asteroids.Main.WORLD_SIZE;
 
 public class AsteroidSpawner {
 
-    private static final float SIZE = 100;
-
     private final Random rng;
 
     public AsteroidSpawner() {
@@ -26,9 +23,23 @@ public class AsteroidSpawner {
             return;
 
         Vector2 spawnPos = getSpawn();
-        var asteroid = new Asteroid(textures, (int) SIZE, spawnPos);
-        asteroid.setMovement(getDir(spawnPos).setLength(50));
+        var asteroid = new Asteroid(textures, spawnPos, 0);
+        asteroid.setMovement(getDir().setLength(50));
+        asteroid.getSprite().setRotation(rng.nextInt(360));
         asteroids.add(asteroid);
+    }
+
+    public void spawnFromDestroyed(Asteroid asteroid, Collection<Asteroid> newAsteroids, Map<String, Texture> textures) {
+        if (asteroid.getType() == 2)
+            return;
+
+        int newType = asteroid.getType() + 1;
+        for (int i = 0; i < 2; i++) {
+            var newAsteroid = new Asteroid(textures, asteroid.getPos().cpy(), newType);
+            newAsteroid.setMovement(getMovementFrom(asteroid));
+            asteroid.getSprite().setRotation(rng.nextInt(360));
+            newAsteroids.add(newAsteroid);
+        }
     }
 
     private Vector2 getSpawn() {
@@ -49,10 +60,12 @@ public class AsteroidSpawner {
         }
     }
 
-    private Vector2 getDir(Vector2 spawn) {
+    private Vector2 getDir() {
         return new Vector2(rng.nextFloat(-1, 1), rng.nextFloat(-1, 1)).nor();
-        // float x = rng.nextFloat(10, 90);
-        // float y = rng.nextFloat(10, 90);
-        // return new Vector2(x, y).sub(spawn).nor();
     }
+
+    private Vector2 getMovementFrom(Asteroid asteroid) {
+        return asteroid.getMovement().cpy().rotateDeg(rng.nextInt(-90, 90));
+    }
+
 }

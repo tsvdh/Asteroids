@@ -34,6 +34,6 @@
   - 1sec lifetime
 - Asteroids spawn randomly on boundary
   - speed 50m/s
-  - sizes: 10 -> 6 -> 3
+  - sizes: 100 -> 60 -> 30
   - amount: 1 -> 2 -> 2
   - spawn until 10 asteroids
