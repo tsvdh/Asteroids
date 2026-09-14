@@ -8,7 +8,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 
+import static tsvdh.asteroids.Main.BUFFER_SIZE;
+import static tsvdh.asteroids.Main.WORLD_SIZE;
+
 public class AsteroidSpawner {
+
+    private static final float SIZE = 100;
 
     private final Random rng;
 
@@ -20,10 +25,10 @@ public class AsteroidSpawner {
         if (asteroids.size() >= 10)
             return;
 
-        var asteroid = new Asteroid(textures, 10);
+        var asteroid = new Asteroid(textures, (int) SIZE);
         Vector2 spawnPos = getSpawn();
         asteroid.setPos(spawnPos);
-        asteroid.setMovement(getDir(spawnPos).setLength(5));
+        asteroid.setMovement(getDir(spawnPos).setLength(50));
         asteroids.add(asteroid);
     }
 
@@ -32,22 +37,23 @@ public class AsteroidSpawner {
         float edgePos = rng.nextFloat();
 
         if (edge == 0) {
-            return new Vector2(100 * edgePos, 0).add(0, -5);
+            return new Vector2(WORLD_SIZE * edgePos, 0).add(0, -BUFFER_SIZE);
         }
         else if (edge == 1) {
-            return new Vector2(100 * edgePos, 100).add(0, 5);
+            return new Vector2(WORLD_SIZE * edgePos, WORLD_SIZE).add(0, BUFFER_SIZE);
         }
         else if (edge == 2) {
-            return new Vector2(0, 100 * edgePos).add(-5, 0);
+            return new Vector2(0, WORLD_SIZE * edgePos).add(- BUFFER_SIZE, 0);
         }
         else {
-            return new Vector2(100, 100 * edgePos).add(5, 0);
+            return new Vector2(WORLD_SIZE, WORLD_SIZE * edgePos).add(BUFFER_SIZE, 0);
         }
     }
 
     private Vector2 getDir(Vector2 spawn) {
-        float x = rng.nextFloat(10, 90);
-        float y = rng.nextFloat(10, 90);
-        return new Vector2(x, y).sub(spawn).nor();
+        return new Vector2(rng.nextFloat(-1, 1), rng.nextFloat(-1, 1)).nor();
+        // float x = rng.nextFloat(10, 90);
+        // float y = rng.nextFloat(10, 90);
+        // return new Vector2(x, y).sub(spawn).nor();
     }
 }

@@ -21,19 +21,19 @@
     - All items warp to opposite side of screen
 
 ### Controls
-- Screen is 100 by 100
-- Ship is 3 wide
+- Screen is 1000 by 1000
+- Ship is 30 wide
 - 'w' to add movement in direction of orientation
-  - 1m/s^2 acceleration
+  - 10m/s^2 acceleration
 - 'a' and 'd' to rotate orientation
   - 360deg in 1 sec
 - movement decays over time
   - decays 30% per second
 - 'enter' to shoot a laser
-  - 100m/s laser speed
+  - 1000m/s laser speed
   - 1sec lifetime
 - Asteroids spawn randomly on boundary
-  - speed 5m/s
+  - speed 50m/s
   - sizes: 10 -> 6 -> 3
   - amount: 1 -> 2 -> 2
   - spawn until 10 asteroids

@@ -8,11 +8,13 @@ import java.util.Map;
 
 public class Laser extends RoundGameObject {
 
+    private static final float SIZE = 5;
+
     private final Instant creationInstant;
 
     public Laser(Map<String, Texture> textures) {
         super(textures);
-        setScale(0.5f);
+        setScale(SIZE);
         creationInstant = Instant.now();
     }
 

@@ -7,21 +7,23 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.Map;
 
+import static tsvdh.asteroids.Main.WORLD_SIZE;
+
 public class Ship extends RoundGameObject {
+
+    private static final float SIZE = 30;
 
     private final Texture thrustTexture;
     private Vector2 forward;
     private boolean thrust;
-    private int lives;
 
     public Ship(Map<String, Texture> textures) {
         super(textures);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
         forward = new Vector2(0, 1);
         thrust = false;
-        setScale(3);
-        setPos(new Vector2(50, 50));
-        lives = 3;
+        setScale(SIZE);
+        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
     }
 
     @Override
@@ -45,7 +47,7 @@ public class Ship extends RoundGameObject {
     }
 
     public void thrust() {
-        getMovement().add(forward.cpy().scl(1));
+        getMovement().add(forward.cpy().scl(10));
         if (!thrust) {
             sprite.setTexture(thrustTexture);
             thrust = true;
@@ -67,19 +69,16 @@ public class Ship extends RoundGameObject {
 
     public Laser shootLaser(Map<String, Texture> textures) {
         var laser = new Laser(textures);
-        laser.setPos(pos.cpy().add(forward.cpy().setLength(3)));
-        laser.setMovement(forward.cpy().setLength(100));
+        laser.setPos(pos.cpy().add(forward.cpy().setLength(SIZE)));
+        laser.setMovement(forward.cpy().setLength(1000));
         return laser;
     }
 
-    public boolean notGameOver() {
-        return lives > 0;
-    }
+
 
     @Override
     public void destroy() {
-        lives--;
-        setPos(new Vector2(50, 50));
+        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
         setMovement(new Vector2(0, 0));
         forward = new Vector2(0, 1);
         sprite.setRotation(0);
