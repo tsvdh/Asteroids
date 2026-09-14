@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import tsvdh.asteroids.logic.Alien;
+import tsvdh.asteroids.logic.AlienSpawner;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.AsteroidSpawner;
 import tsvdh.asteroids.logic.GameObject;
@@ -38,6 +40,9 @@ public class Main extends ApplicationAdapter {
     Collection<Laser> shipLasers;
     AsteroidSpawner asteroidSpawner;
     Collection<Asteroid> asteroids;
+    AlienSpawner alienSpawner;
+    Collection<Alien> aliens;
+    Collection<Laser> alienLasers;
 
     int lives;
     int score;
@@ -58,6 +63,9 @@ public class Main extends ApplicationAdapter {
         shipLasers = new LinkedList<>();
         asteroidSpawner = new AsteroidSpawner();
         asteroids = new LinkedList<>();
+        alienSpawner = new AlienSpawner();
+        aliens = new LinkedList<>();
+        alienLasers = new LinkedList<>();
         lives = 3;
         setNormalFont();
         setMessageFont();
@@ -117,13 +125,24 @@ public class Main extends ApplicationAdapter {
     private void logic() {
         ship.logic();
         shipLasers.forEach(Laser::logic);
+
         asteroidSpawner.spawn(asteroids, textures);
         asteroids.forEach(Asteroid::logic);
+
+        alienSpawner.spawn(aliens, textures);
+        aliens.forEach(alien -> {
+            alien.logic();
+            alien.shootLaser(textures, ship)
+                .ifPresent(laser -> alienLasers.add(laser));
+        });
+        alienLasers.forEach(Laser::logic);
 
         handleCollisions();
 
         shipLasers.removeIf(GameObject::isDestroyed);
         asteroids.removeIf(GameObject::isDestroyed);
+        alienLasers.removeIf(GameObject::isDestroyed);
+        aliens.removeIf(GameObject::isDestroyed);
 
         livesText.setText(normalFont, String.format("Lives: %s", lives));
         scoreText.setText(normalFont, String.format("Score: %s", score));
@@ -138,10 +157,12 @@ public class Main extends ApplicationAdapter {
         if (notGameOver())
             ship.draw(spriteBatch);
 
-        shipLasers.forEach(laser ->laser.draw(spriteBatch));
+        shipLasers.forEach(laser -> laser.draw(spriteBatch));
         asteroids.forEach(asteroid -> asteroid.draw(spriteBatch));
+        aliens.forEach(alien -> alien.draw(spriteBatch));
+        alienLasers.forEach(laser -> laser.draw(spriteBatch));
 
-        if (!notGameOver())
+        if (gameOver())
             drawText(messageFont, gameOverText, WORLD_SIZE / 2, WORLD_SIZE / 2, true);
 
         float textMargin = WORLD_SIZE / 50;
@@ -168,10 +189,13 @@ public class Main extends ApplicationAdapter {
     }
 
     private void handleCollisions() {
+        if (gameOver())
+            return;
+
         Collection<Asteroid> newAsteroids = new LinkedList<>();
 
         asteroids.forEach(asteroid -> {
-            if (notGameOver() && asteroid.getCollider().overlaps(ship.getCollider())) {
+            if (asteroid.getCollider().overlaps(ship.getCollider())) {
                 lives--;
                 ship.destroy();
             }
@@ -182,6 +206,26 @@ public class Main extends ApplicationAdapter {
                     asteroid.destroy();
                     laser.destroy();
                     asteroidSpawner.spawnFromDestroyed(asteroid, newAsteroids, textures);
+                }
+            });
+        });
+
+        alienLasers.forEach(laser -> {
+            if (laser.getCollider().overlaps(ship.getCollider())) {
+                lives--;
+                ship.destroy();
+            }
+        });
+
+        aliens.forEach(alien -> {
+            if (alien.getCollider().overlaps(ship.getCollider())) {
+                lives--;
+                ship.destroy();
+            }
+            shipLasers.forEach(laser -> {
+                if (laser.getCollider().overlaps(alien.getCollider())) {
+                    alien.destroy();
+                    laser.destroy();
                 }
             });
         });
@@ -198,7 +242,11 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    boolean gameOver() {
+        return lives <= 0;
+    }
+
     boolean notGameOver() {
-        return lives > 0;
+        return !gameOver();
     }
 }

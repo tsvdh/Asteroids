@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
+import java.time.Duration;
 import java.util.Map;
 
 import static tsvdh.asteroids.Main.WORLD_SIZE;
@@ -68,7 +69,7 @@ public class Ship extends RoundGameObject {
     }
 
     public Laser shootLaser(Map<String, Texture> textures) {
-        var laser = new Laser(textures, pos.cpy().add(forward.cpy().setLength(SIZE)));
+        var laser = new Laser(textures, pos.cpy().add(forward.cpy().setLength(size)), Duration.ofSeconds(1));
         laser.setMovement(forward.cpy().setLength(1000));
         return laser;
     }

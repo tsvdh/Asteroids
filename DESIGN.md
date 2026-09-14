@@ -15,7 +15,6 @@
     - Collision
         - Everything collides with each other
     - Gain score for:
-        - Time
         - Asteroids destroyed
         - Aliens killed
     - All items warp to opposite side of screen
@@ -37,3 +36,10 @@
   - sizes: 100 -> 60 -> 30
   - amount: 1 -> 2 -> 2
   - spawn until 10 asteroids
+- Aliens spawn randomly on boundary
+  - speed 150m/s
+  - spawn every 20 seconds
+    - max 2 in world
+  - shoot every 1 sec
+    - 250m/s laser speed
+    - 2sec lifetime
