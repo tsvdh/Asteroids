@@ -69,7 +69,7 @@ public class Main extends ApplicationAdapter {
     private void setNormalFont() {
         var generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/Connection.ttf"));
         var parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameters.size = 50;
+        parameters.size = (int) WORLD_SIZE / 20;
         normalFont = generator.generateFont(parameters);
         generator.dispose();
     }
@@ -77,7 +77,7 @@ public class Main extends ApplicationAdapter {
     private void setMessageFont() {
         var generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/Connection.ttf"));
         var parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameters.size = 100;
+        parameters.size = (int) WORLD_SIZE / 10;
         parameters.color = Color.RED;
         messageFont = generator.generateFont(parameters);
         generator.dispose();
