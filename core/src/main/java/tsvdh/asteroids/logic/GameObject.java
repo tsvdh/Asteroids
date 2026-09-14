@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Map;
@@ -18,15 +17,13 @@ public abstract class GameObject {
     Sprite sprite;
     Vector2 pos;
     Vector2 movement;
-    float scale;
+    float size;
     boolean destroyed = false;
 
     public GameObject(Map<String, Texture> textures) {
         texture = textures.get(getTextureName());
         sprite = getSprite(texture);
-        pos = new Vector2();
         movement = new Vector2();
-        scale = 1;
     }
 
     public Vector2 getPos() {
@@ -38,7 +35,7 @@ public abstract class GameObject {
     }
 
     public float getScale() {
-        return scale;
+        return size;
     }
 
     public boolean isDestroyed() {
@@ -64,9 +61,9 @@ public abstract class GameObject {
         this.movement = movement;
     }
 
-    public void setScale(float newScale) {
-        this.scale = newScale;
-        this.sprite.setScale(newScale);
+    public void setSize(float newSize) {
+        this.size = newSize;
+        this.sprite.setScale(newSize);
     }
 
     public void destroy() {

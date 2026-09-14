@@ -2,7 +2,6 @@ package tsvdh.asteroids.logic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Map;
@@ -27,8 +26,8 @@ public abstract class RoundGameObject extends GameObject {
     }
 
     @Override
-    public void setScale(float newScale) {
-        super.setScale(newScale);
-        collider.setRadius(newScale / 2);
+    public void setSize(float newSize) {
+        super.setSize(newSize);
+        collider.setRadius(newSize / 2);
     }
 }

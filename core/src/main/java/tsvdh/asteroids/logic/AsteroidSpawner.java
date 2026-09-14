@@ -25,9 +25,8 @@ public class AsteroidSpawner {
         if (asteroids.size() >= 10)
             return;
 
-        var asteroid = new Asteroid(textures, (int) SIZE);
         Vector2 spawnPos = getSpawn();
-        asteroid.setPos(spawnPos);
+        var asteroid = new Asteroid(textures, (int) SIZE, spawnPos);
         asteroid.setMovement(getDir(spawnPos).setLength(50));
         asteroids.add(asteroid);
     }

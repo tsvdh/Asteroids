@@ -19,11 +19,11 @@ public class Ship extends RoundGameObject {
 
     public Ship(Map<String, Texture> textures) {
         super(textures);
+        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        setSize(SIZE);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
         forward = new Vector2(0, 1);
         thrust = false;
-        setScale(SIZE);
-        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
     }
 
     @Override
@@ -68,13 +68,10 @@ public class Ship extends RoundGameObject {
     }
 
     public Laser shootLaser(Map<String, Texture> textures) {
-        var laser = new Laser(textures);
-        laser.setPos(pos.cpy().add(forward.cpy().setLength(SIZE)));
+        var laser = new Laser(textures, pos.cpy().add(forward.cpy().setLength(SIZE)));
         laser.setMovement(forward.cpy().setLength(1000));
         return laser;
     }
-
-
 
     @Override
     public void destroy() {

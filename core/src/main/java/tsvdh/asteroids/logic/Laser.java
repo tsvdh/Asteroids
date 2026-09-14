@@ -1,6 +1,7 @@
 package tsvdh.asteroids.logic;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -12,9 +13,10 @@ public class Laser extends RoundGameObject {
 
     private final Instant creationInstant;
 
-    public Laser(Map<String, Texture> textures) {
+    public Laser(Map<String, Texture> textures, Vector2 pos) {
         super(textures);
-        setScale(SIZE);
+        setSize(SIZE);
+        setPos(pos);
         creationInstant = Instant.now();
     }
 
