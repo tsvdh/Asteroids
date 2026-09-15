@@ -19,27 +19,33 @@
         - Aliens killed
     - All items warp to opposite side of screen
 
-### Controls
-- Screen is 1000 by 1000
-- Ship is 30 wide
-- 'w' to add movement in direction of orientation
-  - 10m/s^2 acceleration
-- 'a' and 'd' to rotate orientation
-  - 360deg in 1 sec
-- movement decays over time
-  - decays 30% per second
-- 'enter' to shoot a laser
-  - 1000m/s laser speed
-  - 1sec lifetime
-- Asteroids spawn randomly on boundary
-  - speed 50m/s
-  - sizes: 100 -> 60 -> 30
-  - amount: 1 -> 2 -> 2
-  - spawn until 10 asteroids
-- Aliens spawn randomly on boundary
-  - speed 150m/s
-  - spawn every 20 seconds
-    - max 2 in world
-  - shoot every 1 sec
-    - 250m/s laser speed
-    - 2sec lifetime
+### Specification
+- Normal Asteroids
+  - Screen is 1000 by 1000
+  - Ship is 30 wide
+  - 'w' to add movement in direction of orientation
+    - 5m/s^2 acceleration
+  - 'a' and 'd' to rotate orientation
+    - 360deg in 1 sec
+  - movement decays over time
+    - decays 10% per second
+  - 'enter' to shoot a laser
+    - 500m/s laser speed
+    - 1sec lifetime
+  - Asteroids spawn randomly on boundary
+    - speed: 50m/s -> 100m/s -> 150m/s
+    - sizes: 100 -> 60 -> 30
+    - amount: 1 -> 2 -> 2
+    - spawn:
+      - max 10 big
+      - 20 total
+    - score: 10 -> 20 -> 40
+  - Aliens spawn randomly on boundary
+    - speed 150m/s
+    - spawn every 20 seconds
+      - max 2 in world
+    - shoot every 1 sec
+      - 250m/s laser speed
+      - 2sec lifetime
+  - On asteroid hit, respawn at center
+    - Invincible for 2 seconds

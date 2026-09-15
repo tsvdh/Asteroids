@@ -9,6 +9,8 @@ import java.util.Random;
 public class Asteroid extends RoundGameObject {
 
     private static final float[] SIZES = {100, 60, 30};
+    private static final float[] SPEEDS = {50, 100, 150};
+    private static final int[] SCORES = {10, 20, 40};
 
     private static final Random textureRng = new Random();
     private final int type;
@@ -27,5 +29,18 @@ public class Asteroid extends RoundGameObject {
 
     public int getType() {
         return type;
+    }
+
+    @Override
+    public void setMovement(Vector2 movement) {
+        throw new RuntimeException("Not allowed, use 'setDirection' instead");
+    }
+
+    public void setDirection(Vector2 dir) {
+        movement = dir.setLength(SPEEDS[type]);
+    }
+
+    public int getScore() {
+        return SCORES[type];
     }
 }

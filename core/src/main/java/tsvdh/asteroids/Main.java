@@ -154,7 +154,7 @@ public class Main extends ApplicationAdapter {
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
 
-        if (notGameOver())
+        if (notGameOver() && ship.shouldDraw())
             ship.draw(spriteBatch);
 
         shipLasers.forEach(laser -> laser.draw(spriteBatch));
@@ -195,39 +195,53 @@ public class Main extends ApplicationAdapter {
         Collection<Asteroid> newAsteroids = new LinkedList<>();
 
         asteroids.forEach(asteroid -> {
-            if (asteroid.getCollider().overlaps(ship.getCollider())) {
+            if (asteroid.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable()) {
                 lives--;
                 ship.destroy();
             }
 
             shipLasers.forEach(laser -> {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
-                    score += 10;
+                    score += asteroid.getScore();
                     asteroid.destroy();
                     laser.destroy();
-                    asteroidSpawner.spawnFromDestroyed(asteroid, newAsteroids, textures);
+                    asteroidSpawner.spawnFromDestroyed(asteroid, asteroids, newAsteroids, textures);
+                }
+            });
+
+            aliens.forEach(alien -> {
+                if (asteroid.getCollider().overlaps(alien.getCollider())) {
+                    asteroid.destroy();
+                    asteroidSpawner.spawnFromDestroyed(asteroid, asteroids, newAsteroids, textures);
                 }
             });
         });
 
-        alienLasers.forEach(laser -> {
-            if (laser.getCollider().overlaps(ship.getCollider())) {
-                lives--;
-                ship.destroy();
-            }
-        });
-
-        aliens.forEach(alien -> {
-            if (alien.getCollider().overlaps(ship.getCollider())) {
-                lives--;
-                ship.destroy();
-            }
-            shipLasers.forEach(laser -> {
-                if (laser.getCollider().overlaps(alien.getCollider())) {
+        shipLasers.forEach(shipLaser -> {
+            alienLasers.forEach(alienLaser -> {
+                if (shipLaser.getCollider().overlaps(alienLaser.getCollider())) {
+                    shipLaser.destroy();
+                    alienLaser.destroy();
+                }
+            });
+            aliens.forEach(alien -> {
+                if (shipLaser.getCollider().overlaps(alien.getCollider())) {
                     alien.destroy();
-                    laser.destroy();
+                    shipLaser.destroy();
                 }
             });
+        });
+        alienLasers.forEach(alienLaser -> {
+            if (alienLaser.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable()) {
+                lives--;
+                ship.destroy();
+            }
+        });
+        aliens.forEach(alien -> {
+            if (alien.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable()) {
+                lives--;
+                ship.destroy();
+            }
         });
 
         asteroids.addAll(newAsteroids);

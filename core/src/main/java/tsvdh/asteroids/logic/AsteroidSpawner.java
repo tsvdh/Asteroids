@@ -8,34 +8,40 @@ import java.util.Map;
 
 public class AsteroidSpawner extends Spawner {
 
+    private static final int MAX_ASTEROIDS = 20;
+
     public void spawn(Collection<Asteroid> asteroids, Map<String, Texture> textures) {
-        if (asteroids.stream()
-                .filter(asteroid -> asteroid.getType() == 0)
-                .toList().size() >= 10)
+        boolean bigAsteroidLimit = asteroids.stream()
+            .filter(asteroid -> asteroid.getType() == 0)
+            .toList().size() >= 10;
+
+        if (asteroids.size() >= MAX_ASTEROIDS || bigAsteroidLimit)
             return;
 
         Vector2 spawnPos = getBoundaryPos();
         var asteroid = new Asteroid(textures, spawnPos, 0);
-        asteroid.setMovement(getRandomDir().setLength(50));
+        asteroid.setDirection(getRandomDir());
         asteroid.getSprite().setRotation(rng.nextInt(360));
         asteroids.add(asteroid);
     }
 
-    public void spawnFromDestroyed(Asteroid asteroid, Collection<Asteroid> newAsteroids, Map<String, Texture> textures) {
-        if (asteroid.getType() == 2)
+    public void spawnFromDestroyed(Asteroid destroyed, Collection<Asteroid> asteroids,
+                                   Collection<Asteroid> newAsteroids, Map<String, Texture> textures) {
+        if (destroyed.getType() == 2)
             return;
 
-        int newType = asteroid.getType() + 1;
-        for (int i = 0; i < 2; i++) {
-            var newAsteroid = new Asteroid(textures, asteroid.getPos().cpy(), newType);
-            newAsteroid.setMovement(getMovementFrom(asteroid));
-            asteroid.getSprite().setRotation(rng.nextInt(360));
+        int newType = destroyed.getType() + 1;
+        int newCount = asteroids.size() < MAX_ASTEROIDS ? 2 : 1;
+        for (int i = 0; i < newCount; i++) {
+            var newAsteroid = new Asteroid(textures, destroyed.getPos().cpy(), newType);
+            newAsteroid.setDirection(getDirFrom(destroyed));
+            newAsteroid.getSprite().setRotation(rng.nextInt(360));
             newAsteroids.add(newAsteroid);
         }
     }
 
-    private Vector2 getMovementFrom(Asteroid asteroid) {
-        return asteroid.getMovement().cpy().rotateDeg(rng.nextInt(-90, 90));
+    private Vector2 getDirFrom(Asteroid asteroid) {
+        return asteroid.getMovement().cpy().nor().rotateDeg(rng.nextInt(-90, 90));
     }
 
 }
