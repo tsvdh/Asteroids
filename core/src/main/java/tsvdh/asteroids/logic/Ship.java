@@ -9,8 +9,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 
-import static tsvdh.asteroids.Main.WORLD_SIZE;
-
 public class Ship extends RoundGameObject {
 
     private static final float SIZE = 30;
@@ -21,9 +19,9 @@ public class Ship extends RoundGameObject {
 
     private Instant lastDeath;
 
-    public Ship(Map<String, Texture> textures) {
+    public Ship(Map<String, Texture> textures, Vector2 pos) {
         super(textures);
-        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        setPos(pos);
         setSize(SIZE);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
         forward = new Vector2(0, 1);
@@ -80,7 +78,6 @@ public class Ship extends RoundGameObject {
 
     @Override
     public void destroy() {
-        setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
         setMovement(new Vector2(0, 0));
         forward = new Vector2(0, 1);
         sprite.setRotation(0);

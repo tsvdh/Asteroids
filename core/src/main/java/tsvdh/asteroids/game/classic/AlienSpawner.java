@@ -1,18 +1,20 @@
-package tsvdh.asteroids.logic;
+package tsvdh.asteroids.game.classic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import tsvdh.asteroids.logic.Alien;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
-public class AlienSpawner extends Spawner {
+public class AlienSpawner extends ClassicSpawner {
 
     private Instant lastSpawn;
 
-    public AlienSpawner() {
+    protected AlienSpawner(float worldSize, float bufferSize) {
+        super(worldSize, bufferSize);
         lastSpawn = Instant.now();
     }
 

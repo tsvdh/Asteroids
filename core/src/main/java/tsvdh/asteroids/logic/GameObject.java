@@ -8,9 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.Map;
 
-import static tsvdh.asteroids.Main.BUFFER_SIZE;
-import static tsvdh.asteroids.Main.WORLD_SIZE;
-
 public abstract class GameObject {
 
     Texture texture;
@@ -82,19 +79,8 @@ public abstract class GameObject {
         sprite.draw(batch);
     }
 
-    private static float handleOutOfBounds(float val) {
-        float boundsToBoundsLength = WORLD_SIZE + 2 * BUFFER_SIZE;
-        if (val < -BUFFER_SIZE)
-            val += boundsToBoundsLength;
-        if (val > WORLD_SIZE + BUFFER_SIZE)
-            val -= boundsToBoundsLength;
-        return val;
-    }
-
     public void logic() {
         pos.add(movement.cpy().scl(Gdx.graphics.getDeltaTime()));
-        pos.x = handleOutOfBounds(pos.x);
-        pos.y = handleOutOfBounds(pos.y);
         setPos(pos);
     }
 }

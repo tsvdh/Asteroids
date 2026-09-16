@@ -1,14 +1,20 @@
-package tsvdh.asteroids.logic;
+package tsvdh.asteroids.game.classic;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import tsvdh.asteroids.logic.Asteroid;
+import tsvdh.asteroids.logic.Spawner;
 
 import java.util.Collection;
 import java.util.Map;
 
-public class AsteroidSpawner extends Spawner {
+public class AsteroidSpawner extends ClassicSpawner {
 
     private static final int MAX_ASTEROIDS = 20;
+
+    protected AsteroidSpawner(float worldSize, float bufferSize) {
+        super(worldSize, bufferSize);
+    }
 
     public void spawn(Collection<Asteroid> asteroids, Map<String, Texture> textures) {
         boolean bigAsteroidLimit = asteroids.stream()

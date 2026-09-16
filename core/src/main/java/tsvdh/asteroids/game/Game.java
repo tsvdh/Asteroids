@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import tsvdh.asteroids.FontManager;
+import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
 
@@ -18,32 +20,37 @@ import java.util.Map;
 
 public abstract class Game extends ApplicationAdapter {
 
-     SpriteBatch spriteBatch = new SpriteBatch();
+    protected Map<String, Texture> textures;
+    protected FitViewport viewPort;
 
-     Map<String, Texture> textures;
+    protected SpriteBatch spriteBatch;
+    protected FontManager screenFontManager;
+    protected FontManager worldFontManager;
 
-     FitViewport viewPort;
-
-     BitmapFont screenNormalFont;
-     BitmapFont screenMessageFont;
-
-    public Game(Map<String, Texture> textures) {
+    public void setTextures(Map<String, Texture> textures) {
         this.textures = textures;
     }
 
+    protected abstract float getWorldSize();
+    protected abstract float getCameraSize();
+
     @Override
     public void create() {
+        if (textures == null)
+            throw new RuntimeException("'textures' must be set before calling this");
         if (viewPort == null)
             throw new RuntimeException("'viewport' must be set before calling this");
-        setScreenNormalFont();
-        setScreenMessageFont();
+
+        spriteBatch = new SpriteBatch();
+        screenFontManager = new FontManager(getCameraSize());
+        screenFontManager.addFont("normal", Color.WHITE, 0.05f);
+        screenFontManager.addFont("warning", Color.RED, 0.1f);
     }
 
     @Override
     public void resize(int width, int height) {
         viewPort.update(width, height, true);
     }
-
     @Override
     public void render() {
         input();
@@ -51,11 +58,11 @@ public abstract class Game extends ApplicationAdapter {
         draw();
     }
 
-     abstract void input();
-     abstract void logic();
-     abstract void draw();
+    protected abstract void input();
+    protected abstract void logic();
+    protected abstract void draw();
 
-     void standardInput(Ship ship, Collection<Laser> shipLasers) {
+    protected void standardInput(Ship ship, Collection<Laser> shipLasers) {
         if (notGameOver()) {
             if (Gdx.input.isKeyPressed(Input.Keys.W)) {
                 ship.thrust();
@@ -74,30 +81,13 @@ public abstract class Game extends ApplicationAdapter {
         }
     }
 
-     abstract boolean gameOver();
+    protected abstract boolean gameOver();
 
-     boolean notGameOver() {
+    protected boolean notGameOver() {
         return !gameOver();
     }
 
-    private void setScreenNormalFont() {
-        var generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/Connection.ttf"));
-        var parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameters.size = viewPort.getScreenHeight() / 20;
-        screenNormalFont = generator.generateFont(parameters);
-        generator.dispose();
-    }
-
-    private void setScreenMessageFont() {
-        var generator = new FreeTypeFontGenerator(Gdx.files.internal("assets/fonts/Connection.ttf"));
-        var parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameters.size = viewPort.getScreenHeight() / 10;
-        parameters.color = Color.RED;
-        screenMessageFont = generator.generateFont(parameters);
-        generator.dispose();
-    }
-
-    void drawText(BitmapFont font, GlyphLayout text, float x, float y, boolean centered) {
+    protected void drawTextWorldSpace(BitmapFont font, GlyphLayout text, float x, float y, boolean centered) {
         if (centered) {
             float originX = x - (text.width / 2);
             float originY = y + (text.height / 2);
@@ -106,5 +96,21 @@ public abstract class Game extends ApplicationAdapter {
         } else {
             font.draw(spriteBatch, text, x, y);
         }
+    }
+
+    protected void drawTextCameraSpace(BitmapFont font, GlyphLayout text, float x, float y, boolean centered) {
+        drawTextWorldSpace(font, text,
+            x + viewPort.getCamera().position.x,
+            y + viewPort.getCamera().position.y,
+            centered);
+    }
+
+    protected abstract float handleOutOfBounds(float val);
+
+    protected void handleOutOfBounds(GameObject gameObject) {
+        Vector2 pos = gameObject.getPos();
+        pos.x = handleOutOfBounds(pos.x);
+        pos.y = handleOutOfBounds(pos.y);
+        gameObject.setPos(pos);
     }
 }

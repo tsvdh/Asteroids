@@ -3,41 +3,33 @@ package tsvdh.asteroids;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.utils.ScreenUtils;
+import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.Game;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
 
     private Game currentGame;
-    private Map<String, Texture> textures;
+    private Map<String, Texture> textures = new HashMap<>();
 
     public Main() {
-        loadTextures(Gdx.files.internal("assets"));
+        currentGame = new ClassicGame();
     }
 
     @Override
     public void create() {
+        loadTextures(Gdx.files.internal("assets"));
+        currentGame.setTextures(textures);
         currentGame.create();
     }
 
     @Override
     public void render() {
         currentGame.render();
-    }
-
-    private void logic() {
-
-    }
-
-    private void draw() {
-
     }
 
     private void loadTextures(FileHandle file) {
