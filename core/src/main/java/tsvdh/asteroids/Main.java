@@ -28,6 +28,11 @@ public class Main extends ApplicationAdapter {
     }
 
     @Override
+    public void resize(int width, int height) {
+        currentGame.resize(width, height);
+    }
+
+    @Override
     public void render() {
         currentGame.render();
     }

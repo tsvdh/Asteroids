@@ -1,7 +1,6 @@
 package tsvdh.asteroids.game.classic;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -15,7 +14,6 @@ import tsvdh.asteroids.logic.Ship;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 public class ClassicGame extends Game {
 
@@ -187,17 +185,17 @@ public class ClassicGame extends Game {
         alienLasers.forEach(laser -> laser.draw(spriteBatch));
 
         if (gameOver())
-            drawTextCameraSpace(screenFontManager.getFont("warning"), gameOverText, 0, 0, true);
+            drawTextCameraSpace(screenFontManager.getFont("warning"), gameOverText,
+                                new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
+                                true);
 
         float textMargin = CAMERA_SIZE / 50;
         drawTextCameraSpace(screenFontManager.getFont("normal"), livesText,
-            textMargin,
-            CAMERA_SIZE - textMargin,
-            false);
+                            new Vector2(textMargin, CAMERA_SIZE - textMargin),
+                            false);
         drawTextCameraSpace(screenFontManager.getFont("normal"), scoreText,
-            CAMERA_SIZE - textMargin - scoreText.width,
-            CAMERA_SIZE - textMargin,
-            false);
+                            new Vector2(CAMERA_SIZE - textMargin - scoreText.width, CAMERA_SIZE - textMargin),
+                            false);
 
         spriteBatch.end();
     }

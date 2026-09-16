@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import tsvdh.asteroids.FontManager;
 import tsvdh.asteroids.logic.GameObject;
@@ -51,6 +52,7 @@ public abstract class Game extends ApplicationAdapter {
     public void resize(int width, int height) {
         viewPort.update(width, height, true);
     }
+
     @Override
     public void render() {
         input();
@@ -87,22 +89,21 @@ public abstract class Game extends ApplicationAdapter {
         return !gameOver();
     }
 
-    protected void drawTextWorldSpace(BitmapFont font, GlyphLayout text, float x, float y, boolean centered) {
+    protected void drawTextWorldSpace(BitmapFont font, GlyphLayout text, Vector2 pos, boolean centered) {
         if (centered) {
-            float originX = x - (text.width / 2);
-            float originY = y + (text.height / 2);
+            float originX = pos.x - (text.width / 2);
+            float originY = pos.y + (text.height / 2);
 
             font.draw(spriteBatch, text, originX, originY);
         } else {
-            font.draw(spriteBatch, text, x, y);
+            font.draw(spriteBatch, text, pos.x, pos.y);
         }
     }
 
-    protected void drawTextCameraSpace(BitmapFont font, GlyphLayout text, float x, float y, boolean centered) {
-        drawTextWorldSpace(font, text,
-            x + viewPort.getCamera().position.x,
-            y + viewPort.getCamera().position.y,
-            centered);
+    protected void drawTextCameraSpace(BitmapFont font, GlyphLayout text, Vector2 pos, boolean centered) {
+        pos.y = getCameraSize() - pos.y;
+        Vector3 worldPos = viewPort.getCamera().unproject(new Vector3(pos, 0));
+        drawTextWorldSpace(font, text, new Vector2(worldPos.x, worldPos.y), centered);
     }
 
     protected abstract float handleOutOfBounds(float val);
