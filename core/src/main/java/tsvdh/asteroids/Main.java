@@ -4,8 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
+import tsvdh.asteroids.game.MainMenu;
+import tsvdh.asteroids.game.ScoreManager;
 import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.tower_defense.TowerDefenseGame;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,16 +18,12 @@ public class Main extends ApplicationAdapter {
 
     private Game currentGame;
     private Map<String, Texture> textures = new HashMap<>();
-
-    public Main() {
-        currentGame = new ClassicGame();
-    }
+    private ScoreManager scoreManager;
 
     @Override
     public void create() {
         loadTextures(Gdx.files.internal("assets"));
-        currentGame.setTextures(textures);
-        currentGame.create();
+        scoreManager = new ScoreManager("scores");
     }
 
     @Override
@@ -34,7 +33,33 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+        if (currentGame == null) {
+            currentGame = new MainMenu(textures);
+            currentGame.create();
+        }
+
         currentGame.render();
+
+        if (!currentGame.gameShouldExit())
+            return;
+
+        currentGame.dispose();
+
+        if (currentGame instanceof MainMenu) {
+            var nextGame = ((MainMenu) currentGame).getNextGame();
+
+            if (nextGame == ClassicGame.class) {
+                currentGame = new ClassicGame(textures, scoreManager);
+            }
+            else if (nextGame == TowerDefenseGame.class) {
+                currentGame = new TowerDefenseGame(textures, scoreManager);
+            }
+            else throw new RuntimeException("Illegal next game");
+        }
+        else
+            currentGame = new MainMenu(textures);
+
+        currentGame.create();
     }
 
     private void loadTextures(FileHandle file) {
@@ -44,10 +69,5 @@ public class Main extends ApplicationAdapter {
             else if (child.extension().equals("png"))
                 textures.put(child.path(), new Texture(child));
         }
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
     }
 }

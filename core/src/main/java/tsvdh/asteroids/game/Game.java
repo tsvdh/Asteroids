@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import tsvdh.asteroids.FontManager;
+import tsvdh.asteroids.util.FontManager;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
@@ -35,17 +35,19 @@ public abstract class Game extends ApplicationAdapter {
     protected abstract float getWorldSize();
     protected abstract float getCameraSize();
 
+    public Game(Map<String, Texture> textures) {
+        this.textures = textures;
+    }
+
     @Override
     public void create() {
-        if (textures == null)
-            throw new RuntimeException("'textures' must be set before calling this");
-        if (viewPort == null)
-            throw new RuntimeException("'viewport' must be set before calling this");
-
+        viewPort = new FitViewport(getCameraSize(), getCameraSize());
         spriteBatch = new SpriteBatch();
         screenFontManager = new FontManager(getCameraSize());
         screenFontManager.addFont("normal", Color.WHITE, 0.05f);
         screenFontManager.addFont("warning", Color.RED, 0.1f);
+
+        resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
@@ -66,20 +68,19 @@ public abstract class Game extends ApplicationAdapter {
 
     protected void standardInput(Ship ship, Collection<Laser> shipLasers) {
         if (notGameOver()) {
-            if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.W))
                 ship.thrust();
-            } else {
+            else
                 ship.noThrust();
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+
+            if (Gdx.input.isKeyPressed(Input.Keys.A))
                 ship.rotateCounterClockwise();
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+
+            if (Gdx.input.isKeyPressed(Input.Keys.D))
                 ship.rotateClockwise();
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
                 shipLasers.add(ship.shootLaser(textures));
-            }
         }
     }
 
@@ -89,23 +90,6 @@ public abstract class Game extends ApplicationAdapter {
         return !gameOver();
     }
 
-    protected void drawTextWorldSpace(BitmapFont font, GlyphLayout text, Vector2 pos, boolean centered) {
-        if (centered) {
-            float originX = pos.x - (text.width / 2);
-            float originY = pos.y + (text.height / 2);
-
-            font.draw(spriteBatch, text, originX, originY);
-        } else {
-            font.draw(spriteBatch, text, pos.x, pos.y);
-        }
-    }
-
-    protected void drawTextCameraSpace(BitmapFont font, GlyphLayout text, Vector2 pos, boolean centered) {
-        pos.y = getCameraSize() - pos.y;
-        Vector3 worldPos = viewPort.getCamera().unproject(new Vector3(pos, 0));
-        drawTextWorldSpace(font, text, new Vector2(worldPos.x, worldPos.y), centered);
-    }
-
     protected abstract float handleOutOfBounds(float val);
 
     protected void handleOutOfBounds(GameObject gameObject) {
@@ -113,5 +97,14 @@ public abstract class Game extends ApplicationAdapter {
         pos.x = handleOutOfBounds(pos.x);
         pos.y = handleOutOfBounds(pos.y);
         gameObject.setPos(pos);
+    }
+
+    public abstract boolean gameShouldExit();
+
+    @Override
+    public void dispose() {
+        spriteBatch.dispose();
+        screenFontManager.dispose();
+        worldFontManager.dispose();
     }
 }

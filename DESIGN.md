@@ -1,5 +1,13 @@
 ### Features
-- Normal Asteroids
+- Main menu
+  - Title
+  - Classic mode (1)
+    - High score
+  - Tower defense mode (1)
+    - High score
+    - Unlock criteria: 3000
+    - Gray if not unlocked 
+- Classic Asteroids
     - Spaceship with movement and physics
         - Momentum decays over time
         - Lose a life when hit

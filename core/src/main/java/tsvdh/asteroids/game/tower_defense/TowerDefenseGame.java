@@ -1,11 +1,17 @@
-package tsvdh.asteroids.game.tower_defence;
+package tsvdh.asteroids.game.tower_defense;
 
 import com.badlogic.gdx.graphics.Texture;
 import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.ScoreGame;
+import tsvdh.asteroids.game.ScoreManager;
 
 import java.util.Map;
 
-public class TowerDefenceGame extends Game {
+public class TowerDefenseGame extends ScoreGame {
+
+    public TowerDefenseGame(Map<String, Texture> textures, ScoreManager scoreManager) {
+        super(textures, scoreManager, "Tower Defense");
+    }
 
     @Override
     protected float getWorldSize() {
@@ -40,5 +46,10 @@ public class TowerDefenceGame extends Game {
     @Override
     protected float handleOutOfBounds(float val) {
         return 0;
+    }
+
+    @Override
+    public boolean gameShouldExit() {
+        return false;
     }
 }

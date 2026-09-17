@@ -1,21 +1,26 @@
 package tsvdh.asteroids.game.classic;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.ScoreGame;
+import tsvdh.asteroids.game.ScoreManager;
 import tsvdh.asteroids.logic.Alien;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
-public class ClassicGame extends Game {
+public class ClassicGame extends ScoreGame {
 
     private static final float WORLD_SIZE = 1000;
     private static final float BUFFER_SIZE = 50;
@@ -31,10 +36,15 @@ public class ClassicGame extends Game {
 
     private int lives;
     private int score;
+    private Instant gameOverInstant;
 
     private GlyphLayout gameOverText;
     private GlyphLayout livesText;
     private GlyphLayout scoreText;
+
+    public ClassicGame(Map<String, Texture> textures, ScoreManager scoreManager) {
+        super(textures, scoreManager, "Classic");
+    }
 
     @Override
     protected float getWorldSize() {
@@ -48,7 +58,6 @@ public class ClassicGame extends Game {
 
     @Override
     public void create() {
-        viewPort = new FitViewport(CAMERA_SIZE, CAMERA_SIZE);
         super.create();
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
         lives = 3;
@@ -165,6 +174,11 @@ public class ClassicGame extends Game {
         lives--;
         ship.destroy();
         ship.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+
+        if (gameOver()) {
+            gameOverInstant = Instant.now();
+            scoreManager.writeScore(score);
+        }
     }
 
     @Override
@@ -203,5 +217,11 @@ public class ClassicGame extends Game {
     @Override
     protected boolean gameOver() {
         return lives <= 0;
+    }
+
+    @Override
+    public boolean gameShouldExit() {
+        return gameOverInstant != null
+            && Duration.between(gameOverInstant, Instant.now()).toMillis() > 5000;
     }
 }
