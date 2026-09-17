@@ -21,10 +21,10 @@ abstract class TextManager {
 
     abstract FontManager getFontManager();
 
-    public void addText(String textName, String text, Vector2 pos, String fontName, boolean centered) {
+    public void addText(String textName, String text, Vector2 pos, String fontName, Text.AlignMode mode) {
         BitmapFont font = getFontManager().getFont(fontName);
         var glyphLayout = new GlyphLayout(font, text);
-        texts.put(textName, new Text(glyphLayout, pos, font, centered));
+        texts.put(textName, new Text(glyphLayout, pos, font, mode));
     }
 
     public void removeText(String textName) {
@@ -45,16 +45,27 @@ abstract class TextManager {
     }
 
     void drawAtWorldSpace(Text text) {
-        Vector2 pos = text.pos();
+        Vector2 newPos = text.pos().cpy();
 
-        if (text.centered()) {
-            float originX = pos.x - (text.glyphLayout().width / 2);
-            float originY = pos.y + (text.glyphLayout().height / 2);
-
-            text.font().draw(batch, text.glyphLayout(), originX, originY);
-        } else {
-            text.font().draw(batch, text.glyphLayout(), pos.x, pos.y);
+        switch (text.mode()) {
+            case CENTERED -> {
+                newPos.x -= text.glyphLayout().width / 2;
+                newPos.y += text.glyphLayout().height / 2;
+            }
+            case RIGHT_DOWN -> {}
+            case LEFT_DOWN -> {
+                newPos.x -= text.glyphLayout().width;
+            }
+            case LEFT_UP -> {
+                newPos.x -= text.glyphLayout().width;
+                newPos.y += (text.glyphLayout().height / 2);
+            }
+            case RIGHT_UP -> {
+                newPos.y += (text.glyphLayout().height / 2);
+            }
         }
+
+        text.font().draw(batch, text.glyphLayout(), newPos.x, newPos.y);
     }
 
     public void dispose() {

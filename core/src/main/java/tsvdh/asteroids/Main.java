@@ -24,6 +24,8 @@ public class Main extends ApplicationAdapter {
     public void create() {
         loadTextures(Gdx.files.internal("assets"));
         scoreManager = new ScoreManager("scores");
+        currentGame = new MainMenu(textures);
+        currentGame.create();
     }
 
     @Override

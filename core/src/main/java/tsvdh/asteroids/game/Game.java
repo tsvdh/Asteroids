@@ -3,18 +3,15 @@ package tsvdh.asteroids.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import tsvdh.asteroids.util.FontManager;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
+import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
+import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,8 +22,8 @@ public abstract class Game extends ApplicationAdapter {
     protected FitViewport viewPort;
 
     protected SpriteBatch spriteBatch;
-    protected FontManager screenFontManager;
-    protected FontManager worldFontManager;
+    protected RelativeTextManager screenTextManager;
+    protected AbsoluteTextManager worldTextManager;
 
     public void setTextures(Map<String, Texture> textures) {
         this.textures = textures;
@@ -43,9 +40,8 @@ public abstract class Game extends ApplicationAdapter {
     public void create() {
         viewPort = new FitViewport(getCameraSize(), getCameraSize());
         spriteBatch = new SpriteBatch();
-        screenFontManager = new FontManager(getCameraSize());
-        screenFontManager.addFont("normal", Color.WHITE, 0.05f);
-        screenFontManager.addFont("warning", Color.RED, 0.1f);
+        screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
+        worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
 
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
@@ -104,7 +100,7 @@ public abstract class Game extends ApplicationAdapter {
     @Override
     public void dispose() {
         spriteBatch.dispose();
-        screenFontManager.dispose();
-        worldFontManager.dispose();
+        screenTextManager.dispose();
+        worldTextManager.dispose();
     }
 }

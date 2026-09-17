@@ -2,10 +2,8 @@ package tsvdh.asteroids.game.classic;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import tsvdh.asteroids.game.ScoreGame;
 import tsvdh.asteroids.game.ScoreManager;
 import tsvdh.asteroids.logic.Alien;
@@ -13,6 +11,7 @@ import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
+import tsvdh.asteroids.util.Text;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -38,10 +37,6 @@ public class ClassicGame extends ScoreGame {
     private int score;
     private Instant gameOverInstant;
 
-    private GlyphLayout gameOverText;
-    private GlyphLayout livesText;
-    private GlyphLayout scoreText;
-
     public ClassicGame(Map<String, Texture> textures, ScoreManager scoreManager) {
         super(textures, scoreManager, "Classic");
     }
@@ -61,9 +56,17 @@ public class ClassicGame extends ScoreGame {
         super.create();
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
         lives = 3;
-        gameOverText = new GlyphLayout(screenFontManager.getFont("warning"), "Game over");
-        livesText = new GlyphLayout(screenFontManager.getFont("normal"), "");
-        scoreText = new GlyphLayout(screenFontManager.getFont("normal"), "");
+
+        screenTextManager.addFont("normal", Color.WHITE, 0.05f);
+        screenTextManager.addFont("warning", Color.RED, 0.1f);
+
+        float textMargin = CAMERA_SIZE / 50;
+        screenTextManager.addText("lives", String.format("Lives: %s", lives),
+                                  new Vector2(textMargin, CAMERA_SIZE - textMargin),
+                                  "normal", Text.AlignMode.RIGHT_DOWN);
+        screenTextManager.addText("score", "Score: 0",
+                                  new Vector2(CAMERA_SIZE - textMargin, CAMERA_SIZE - textMargin),
+                                  "normal", Text.AlignMode.LEFT_DOWN);
     }
 
     @Override
@@ -94,9 +97,6 @@ public class ClassicGame extends ScoreGame {
         asteroids.removeIf(GameObject::isDestroyed);
         alienLasers.removeIf(GameObject::isDestroyed);
         aliens.removeIf(GameObject::isDestroyed);
-
-        livesText.setText(screenFontManager.getFont("normal"), String.format("Lives: %s", lives));
-        scoreText.setText(screenFontManager.getFont("normal"), String.format("Score: %s", score));
     }
 
     private void handleCollisions() {
@@ -112,6 +112,7 @@ public class ClassicGame extends ScoreGame {
             shipLasers.forEach(laser -> {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
                     score += asteroid.getScore();
+                    screenTextManager.changeText("score", String.format("Score: %s", score));
                     asteroid.destroy();
                     laser.destroy();
                     asteroidSpawner.spawnFromDestroyed(asteroid, asteroids, newAsteroids, textures);
@@ -172,11 +173,15 @@ public class ClassicGame extends ScoreGame {
 
     private void destroyShip() {
         lives--;
+        screenTextManager.changeText("lives", String.format("Lives: %s", lives));
         ship.destroy();
         ship.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
 
         if (gameOver()) {
             gameOverInstant = Instant.now();
+            screenTextManager.addText("gameOver", "Game over",
+                                      new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
+                                      "warning", Text.AlignMode.CENTERED);
             scoreManager.writeScore(score);
         }
     }
@@ -198,18 +203,7 @@ public class ClassicGame extends ScoreGame {
         aliens.forEach(alien -> alien.draw(spriteBatch));
         alienLasers.forEach(laser -> laser.draw(spriteBatch));
 
-        if (gameOver())
-            drawTextCameraSpace(screenFontManager.getFont("warning"), gameOverText,
-                                new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
-                                true);
-
-        float textMargin = CAMERA_SIZE / 50;
-        drawTextCameraSpace(screenFontManager.getFont("normal"), livesText,
-                            new Vector2(textMargin, CAMERA_SIZE - textMargin),
-                            false);
-        drawTextCameraSpace(screenFontManager.getFont("normal"), scoreText,
-                            new Vector2(CAMERA_SIZE - textMargin - scoreText.width, CAMERA_SIZE - textMargin),
-                            false);
+        screenTextManager.draw();
 
         spriteBatch.end();
     }
