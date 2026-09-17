@@ -2,15 +2,14 @@ package tsvdh.asteroids.game.tower_defense;
 
 import com.badlogic.gdx.graphics.Texture;
 import tsvdh.asteroids.game.Game;
-import tsvdh.asteroids.game.ScoreGame;
-import tsvdh.asteroids.game.ScoreManager;
+import tsvdh.asteroids.util.PersistentDataManager;
 
 import java.util.Map;
 
-public class TowerDefenseGame extends ScoreGame {
+public class TowerDefenseGame extends Game {
 
-    public TowerDefenseGame(Map<String, Texture> textures, ScoreManager scoreManager) {
-        super(textures, scoreManager, "Tower Defense");
+    public TowerDefenseGame(Map<String, Texture> textures, PersistentDataManager dataManager) {
+        super(textures, dataManager);
     }
 
     @Override

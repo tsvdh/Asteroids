@@ -4,14 +4,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
-import tsvdh.asteroids.game.ScoreGame;
-import tsvdh.asteroids.game.ScoreManager;
+import tsvdh.asteroids.game.Game;
 import tsvdh.asteroids.logic.Alien;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
+import tsvdh.asteroids.util.PersistentDataManager;
 import tsvdh.asteroids.util.Text;
+import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -19,7 +20,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class ClassicGame extends ScoreGame {
+public class ClassicGame extends Game {
 
     private static final float WORLD_SIZE = 1000;
     private static final float BUFFER_SIZE = 50;
@@ -37,8 +38,10 @@ public class ClassicGame extends ScoreGame {
     private int score;
     private Instant gameOverInstant;
 
-    public ClassicGame(Map<String, Texture> textures, ScoreManager scoreManager) {
-        super(textures, scoreManager, "Classic");
+    private RelativeTextManager screenTextManager;
+
+    public ClassicGame(Map<String, Texture> textures, PersistentDataManager dataManager) {
+        super(textures, dataManager);
     }
 
     @Override
@@ -56,6 +59,8 @@ public class ClassicGame extends ScoreGame {
         super.create();
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
         lives = 3;
+
+        screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
 
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
         screenTextManager.addFont("warning", Color.RED, 0.1f);
@@ -182,7 +187,8 @@ public class ClassicGame extends ScoreGame {
             screenTextManager.addText("gameOver", "Game over",
                                       new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
                                       "warning", Text.AlignMode.CENTERED);
-            scoreManager.writeScore(score);
+            dataManager.data.classicScore = score;
+            dataManager.write();
         }
     }
 
@@ -190,7 +196,6 @@ public class ClassicGame extends ScoreGame {
     protected void draw() {
         ScreenUtils.clear(Color.BLACK);
 
-        // viewPort.getCamera().position.set(ship.getPos(), 0);
         viewPort.apply();
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
@@ -217,5 +222,10 @@ public class ClassicGame extends ScoreGame {
     public boolean gameShouldExit() {
         return gameOverInstant != null
             && Duration.between(gameOverInstant, Instant.now()).toMillis() > 5000;
+    }
+
+    @Override
+    public void dispose() {
+        screenTextManager.dispose();
     }
 }

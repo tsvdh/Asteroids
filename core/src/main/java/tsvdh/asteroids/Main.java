@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import tsvdh.asteroids.game.MainMenu;
-import tsvdh.asteroids.game.ScoreManager;
+import tsvdh.asteroids.util.PersistentDataManager;
 import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.Game;
 import tsvdh.asteroids.game.tower_defense.TowerDefenseGame;
@@ -17,14 +17,14 @@ import java.util.Map;
 public class Main extends ApplicationAdapter {
 
     private Game currentGame;
-    private Map<String, Texture> textures = new HashMap<>();
-    private ScoreManager scoreManager;
+    private final Map<String, Texture> textures = new HashMap<>();
+    private PersistentDataManager dataManager;
 
     @Override
     public void create() {
         loadTextures(Gdx.files.internal("assets"));
-        scoreManager = new ScoreManager("scores");
-        currentGame = new MainMenu(textures);
+        dataManager = new PersistentDataManager("scores.json");
+        currentGame = new MainMenu(textures, dataManager);
         currentGame.create();
     }
 
@@ -36,7 +36,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         if (currentGame == null) {
-            currentGame = new MainMenu(textures);
+            currentGame = new MainMenu(textures, dataManager);
             currentGame.create();
         }
 
@@ -51,15 +51,15 @@ public class Main extends ApplicationAdapter {
             var nextGame = ((MainMenu) currentGame).getNextGame();
 
             if (nextGame == ClassicGame.class) {
-                currentGame = new ClassicGame(textures, scoreManager);
+                currentGame = new ClassicGame(textures, dataManager);
             }
             else if (nextGame == TowerDefenseGame.class) {
-                currentGame = new TowerDefenseGame(textures, scoreManager);
+                currentGame = new TowerDefenseGame(textures, dataManager);
             }
             else throw new RuntimeException("Illegal next game");
         }
         else
-            currentGame = new MainMenu(textures);
+            currentGame = new MainMenu(textures, dataManager);
 
         currentGame.create();
     }

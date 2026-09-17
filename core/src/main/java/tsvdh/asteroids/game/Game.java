@@ -10,8 +10,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
-import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
-import tsvdh.asteroids.util.text_manager.RelativeTextManager;
+import tsvdh.asteroids.util.PersistentDataManager;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,8 +21,8 @@ public abstract class Game extends ApplicationAdapter {
     protected FitViewport viewPort;
 
     protected SpriteBatch spriteBatch;
-    protected RelativeTextManager screenTextManager;
-    protected AbsoluteTextManager worldTextManager;
+
+    protected PersistentDataManager dataManager;
 
     public void setTextures(Map<String, Texture> textures) {
         this.textures = textures;
@@ -32,16 +31,15 @@ public abstract class Game extends ApplicationAdapter {
     protected abstract float getWorldSize();
     protected abstract float getCameraSize();
 
-    public Game(Map<String, Texture> textures) {
+    public Game(Map<String, Texture> textures, PersistentDataManager dataManager) {
         this.textures = textures;
+        this.dataManager = dataManager;
     }
 
     @Override
     public void create() {
         viewPort = new FitViewport(getCameraSize(), getCameraSize());
         spriteBatch = new SpriteBatch();
-        screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
-        worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
 
         resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
@@ -100,7 +98,5 @@ public abstract class Game extends ApplicationAdapter {
     @Override
     public void dispose() {
         spriteBatch.dispose();
-        screenTextManager.dispose();
-        worldTextManager.dispose();
     }
 }

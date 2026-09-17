@@ -3,7 +3,6 @@ package tsvdh.asteroids.util.text_manager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import tsvdh.asteroids.util.font_manager.FontManager;
 import tsvdh.asteroids.util.font_manager.RelativeFontManager;
@@ -36,12 +35,11 @@ public class RelativeTextManager extends TextManager {
     public void draw() {
         texts.values().forEach(text -> {
             Vector2 pos = text.pos();
-            Vector2 oldPos = pos.cpy();
+            Vector2 oldPos = text.pos().cpy();
 
-            Vector3 worldPos = viewport.getCamera().unproject(
-                new Vector3(pos.x, viewport.getWorldHeight() - pos.y, 0)
-            );
-            pos.set(worldPos.x, worldPos.y);
+            pos.x = viewport.getCamera().position.x - viewport.getWorldHeight() / 2 + pos.x;
+            pos.y = viewport.getCamera().position.y - viewport.getWorldHeight() / 2 + pos.y;
+
             drawAtWorldSpace(text);
 
             pos.set(oldPos);
