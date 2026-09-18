@@ -5,13 +5,14 @@
     - High score
   - Tower defense mode (1)
     - High score
-    - Unlock criteria: 3000
+    - Unlock criteria: 2000
     - Gray if not unlocked 
 - Classic Asteroids
     - Spaceship with movement and physics
         - Momentum decays over time
         - Lose a life when hit
             - Three lives
+            - Reset to center
     - Laser shooting
         - 'spacebar' to shoot laser
     - Destructible asteroids
@@ -24,8 +25,20 @@
         - Everything collides with each other
     - Gain score for:
         - Asteroids destroyed
-        - Aliens killed
     - All items warp to opposite side of screen
+- Tower Defense
+  - World with border
+    - Items are destroyed when out of bounds
+  - Spaceship with movement and physics
+    - Momentum decays over time
+    - Lose a life when hit
+      - Three lives
+      - Reset away from border
+    - Camera follows ship 
+      - Camera keeps away from border
+  - Laser shooting
+    - 'spacebar' to shoot laser
+  - 
 
 ### Specification
 - Normal Asteroids

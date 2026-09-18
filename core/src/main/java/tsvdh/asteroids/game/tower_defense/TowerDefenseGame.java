@@ -1,10 +1,13 @@
 package tsvdh.asteroids.game.tower_defense;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import tsvdh.asteroids.game.Game;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
@@ -12,7 +15,9 @@ import tsvdh.asteroids.logic.Ship;
 import tsvdh.asteroids.util.PersistentDataManager;
 import tsvdh.asteroids.util.Text;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
+import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -20,7 +25,11 @@ import java.util.Map;
 public class TowerDefenseGame extends Game {
 
     private final static float WORLD_SIZE = 2000;
-    private final static float CAMERA_SIZE = 1000;
+
+    private final static float[] ZOOM_LEVELS = { 1000, 1500, 2000 };
+    private final static int STARTING_ZOOM = 0;
+    private static float CAMERA_SIZE = ZOOM_LEVELS[STARTING_ZOOM];
+    private int currentZoom;
 
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
@@ -30,7 +39,13 @@ public class TowerDefenseGame extends Game {
 
     private BorderGenerator borderGenerator;
 
-    private AbsoluteTextManager textManager;
+    private int lives;
+    private int score;
+    private int iron;
+    private Instant gameOverInstant;
+
+    private AbsoluteTextManager worldTextManager;
+    private RelativeTextManager screenTextManager;
 
     public TowerDefenseGame(Map<String, Texture> textures, PersistentDataManager dataManager) {
         super(textures, dataManager);
@@ -69,21 +84,52 @@ public class TowerDefenseGame extends Game {
     @Override
     public void create() {
         super.create();
+        currentZoom = STARTING_ZOOM;
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        lives = 3;
+
         borderGenerator = new BorderGenerator(textures, WORLD_SIZE, 500);
         borders.addAll(borderGenerator.makeBorderParts());
         makeBackground();
 
-        textManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
-        textManager.addFont("normal", Color.ORANGE, 50);
-        textManager.addText("test", "Hello world!",
-                            new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
-                            "normal", Text.AlignMode.CENTERED);
+        worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
+        worldTextManager.addFont("normal", Color.ORANGE, 100);
+        worldTextManager.addText("test", "Hello world!",
+                                 new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
+                                 "normal", Text.AlignMode.CENTERED);
+
+        screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
+        screenTextManager.addFont("normal", Color.WHITE, 0.05f);
+        float textMargin = 0.02f;
+        screenTextManager.addText("lives", String.format("Lives: %s", lives),
+                                  new Vector2(textMargin, 1 - textMargin),
+                                  "normal", Text.AlignMode.RIGHT_DOWN);
+    }
+
+    private void zoomIn() {
+        changeZoom(Math.max(0, currentZoom - 1));
+    }
+
+    private void zoomOut() {
+        changeZoom(Math.min(ZOOM_LEVELS.length - 1, currentZoom + 1));
+    }
+
+    private void changeZoom(int zoomLevel) {
+        currentZoom = zoomLevel;
+        CAMERA_SIZE = ZOOM_LEVELS[currentZoom];
+
+        viewPort.setWorldSize(CAMERA_SIZE, CAMERA_SIZE);
+        screenTextManager.resizeFonts();
     }
 
     @Override
     protected void input() {
         standardInput(ship, shipLasers);
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT_BRACKET))
+            zoomIn();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT_BRACKET))
+            zoomOut();
     }
 
     @Override
@@ -109,7 +155,8 @@ public class TowerDefenseGame extends Game {
         ship.draw(spriteBatch);
 
         borders.forEach(border -> border.draw(spriteBatch));
-        textManager.draw();
+        worldTextManager.draw();
+        screenTextManager.draw();
 
         spriteBatch.end();
     }
@@ -142,6 +189,6 @@ public class TowerDefenseGame extends Game {
     @Override
     public void dispose() {
         super.dispose();
-        textManager.dispose();
+        worldTextManager.dispose();
     }
 }

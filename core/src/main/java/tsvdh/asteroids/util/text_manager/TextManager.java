@@ -24,7 +24,7 @@ abstract class TextManager {
     public void addText(String textName, String text, Vector2 pos, String fontName, Text.AlignMode mode) {
         BitmapFont font = getFontManager().getFont(fontName);
         var glyphLayout = new GlyphLayout(font, text);
-        texts.put(textName, new Text(glyphLayout, pos, font, mode));
+        texts.put(textName, new Text(glyphLayout, pos, fontName, mode, text));
     }
 
     public void removeText(String textName) {
@@ -33,16 +33,15 @@ abstract class TextManager {
 
     public void changeText(String textName, String newText) {
         Text text = texts.get(textName);
-        text.glyphLayout().setText(text.font(), newText);
+        BitmapFont font = getFontManager().getFont(text.fontName());
+        text.glyphLayout().setText(font, newText);
     }
 
     public void changePos(String textName, Vector2 newPos) {
         texts.get(textName).pos().set(newPos);
     }
 
-    public void draw() {
-        texts.values().forEach(this::drawAtWorldSpace);
-    }
+    public abstract void draw();
 
     void drawAtWorldSpace(Text text) {
         Vector2 newPos = text.pos().cpy();
@@ -65,7 +64,8 @@ abstract class TextManager {
             }
         }
 
-        text.font().draw(batch, text.glyphLayout(), newPos.x, newPos.y);
+        BitmapFont font = getFontManager().getFont(text.fontName());
+        font.draw(batch, text.glyphLayout(), newPos.x, newPos.y);
     }
 
     public void dispose() {

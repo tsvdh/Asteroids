@@ -66,12 +66,12 @@ public class ClassicGame extends Game {
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
         screenTextManager.addFont("warning", Color.RED, 0.1f);
 
-        float textMargin = CAMERA_SIZE / 50;
+        float textMargin = 0.02f;
         screenTextManager.addText("lives", String.format("Lives: %s", lives),
-                                  new Vector2(textMargin, CAMERA_SIZE - textMargin),
+                                  new Vector2(textMargin, 1 - textMargin),
                                   "normal", Text.AlignMode.RIGHT_DOWN);
         screenTextManager.addText("score", "Score: 0",
-                                  new Vector2(CAMERA_SIZE - textMargin, CAMERA_SIZE - textMargin),
+                                  new Vector2(1 - textMargin, 1 - textMargin),
                                   "normal", Text.AlignMode.LEFT_DOWN);
     }
 
@@ -195,7 +195,7 @@ public class ClassicGame extends Game {
         if (gameOver()) {
             gameOverInstant = Instant.now();
             screenTextManager.addText("gameOver", "Game over",
-                                      new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
+                                      new Vector2(0.5f, 0.5f),
                                       "warning", Text.AlignMode.CENTERED);
             dataManager.data.classicScore = Math.max(score, dataManager.data.classicScore);
             dataManager.write();

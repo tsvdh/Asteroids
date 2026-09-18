@@ -41,11 +41,11 @@ public class MainMenu extends Game {
         screenTextManager.addFont("header", Color.WHITE, 0.15f);
 
         screenTextManager.addText("header", "Asteroids",
-                                  new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE * 2 / 3),
+                                  new Vector2(0.5f, 0.66f),
                                   "header", Text.AlignMode.CENTERED);
 
         screenTextManager.addText("classic", String.format("(1) Classic: %s", dataManager.data.classicScore),
-                                  new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
+                                  new Vector2(0.5f, 0.5f),
                                   "normal", Text.AlignMode.CENTERED);
 
         boolean towerDefenseUnlocked = dataManager.data.classicScore >= SCORE_FOR_TD;
@@ -53,7 +53,7 @@ public class MainMenu extends Game {
             ? String.format("(2) Tower Defense: %s", dataManager.data.towerDefenseScore)
             : String.format("(2) Reach %s to unlock", SCORE_FOR_TD);
         screenTextManager.addText("towerDefense", towerDefenseText,
-                                  new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2 - CAMERA_SIZE * 0.08f),
+                                  new Vector2(0.5f, 0.5f - 0.08f),
                                   towerDefenseUnlocked ? "normal" : "inactive", Text.AlignMode.CENTERED);
     }
 

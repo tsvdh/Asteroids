@@ -2,8 +2,10 @@ package tsvdh.asteroids.util.text_manager;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import tsvdh.asteroids.util.Text;
 import tsvdh.asteroids.util.font_manager.FontManager;
 import tsvdh.asteroids.util.font_manager.RelativeFontManager;
 
@@ -29,20 +31,28 @@ public class RelativeTextManager extends TextManager {
 
     public void resizeFonts() {
         fontManager.resizeFonts(viewport.getWorldHeight());
+        texts.values().forEach(text -> {
+            BitmapFont font = fontManager.getFont(text.fontName());
+            text.glyphLayout().setText(font, text.text());
+        });
     }
 
     @Override
     public void draw() {
-        texts.values().forEach(text -> {
-            Vector2 pos = text.pos();
-            Vector2 oldPos = text.pos().cpy();
+        texts.values().forEach(this::drawAtScreenSpace);
+    }
 
-            pos.x = viewport.getCamera().position.x - viewport.getWorldHeight() / 2 + pos.x;
-            pos.y = viewport.getCamera().position.y - viewport.getWorldHeight() / 2 + pos.y;
+    void drawAtScreenSpace(Text text) {
+        Vector2 pos = text.pos();
+        Vector2 oldPos = text.pos().cpy();
 
-            drawAtWorldSpace(text);
+        float cameraSize = viewport.getWorldHeight();
 
-            pos.set(oldPos);
-        });
+        pos.x = viewport.getCamera().position.x - cameraSize / 2 + pos.x * cameraSize;
+        pos.y = viewport.getCamera().position.y - cameraSize / 2 + pos.y * cameraSize;
+
+        drawAtWorldSpace(text);
+
+        pos.set(oldPos);
     }
 }

@@ -33,6 +33,7 @@ public class RelativeFontManager extends FontManager {
             var parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameters.size = (int) (drawAreaSize * drawAreaFractions.get(name));
             parameters.color = oldFont.getColor();
+            BitmapFont test = generator.generateFont(parameters);
             fonts.put(name, generator.generateFont(parameters));
         });
     }
