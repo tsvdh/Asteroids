@@ -38,10 +38,29 @@ public class AsteroidSpawner extends ClassicSpawner {
 
         int newType = destroyed.getType() + 1;
         int newCount = asteroids.size() < MAX_ASTEROIDS ? 2 : 1;
+        Vector2 prevDir = null;
+
         for (int i = 0; i < newCount; i++) {
             var newAsteroid = new Asteroid(textures, destroyed.getPos().cpy(), newType);
-            newAsteroid.setDirection(getDirFrom(destroyed));
-            newAsteroid.getSprite().setRotation(rng.nextInt(360));
+
+            Vector2 newDir;
+
+            if (prevDir == null)
+                newDir = getDirFrom(destroyed);
+            else {
+                float angle;
+                do {
+                    newDir = getDirFrom(destroyed);
+                    angle = newDir.angleDeg(prevDir);
+                    if (angle > 180)
+                        angle = 360 - angle;
+                }
+                while (angle < 20);
+            }
+            prevDir = newDir;
+
+            newAsteroid.setDirection(newDir);
+            newAsteroid.setRotation(rng.nextInt(360));
             newAsteroids.add(newAsteroid);
         }
     }

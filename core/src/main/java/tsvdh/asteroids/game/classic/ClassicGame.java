@@ -58,6 +58,7 @@ public class ClassicGame extends Game {
     public void create() {
         super.create();
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        ship.setForward(new Vector2(0, 1));
         lives = 3;
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
@@ -104,7 +105,8 @@ public class ClassicGame extends Game {
         aliens.removeIf(GameObject::isDestroyed);
     }
 
-    private void handleCollisions() {
+    @Override
+    protected void handleCollisions() {
         if (gameOver())
             return;
 
@@ -158,8 +160,7 @@ public class ClassicGame extends Game {
         asteroids.addAll(newAsteroids);
     }
 
-    @Override
-    protected float handleOutOfBounds(float val) {
+    private float handleOutOfBounds(float val) {
         float boundsToBoundsLength = WORLD_SIZE + 2 * BUFFER_SIZE;
         if (val < -BUFFER_SIZE)
             val += boundsToBoundsLength;
@@ -168,7 +169,16 @@ public class ClassicGame extends Game {
         return val;
     }
 
-    private void handleOutOfBounds() {
+    @Override
+    protected void handleOutOfBounds(GameObject gameObject) {
+        Vector2 pos = gameObject.getPos();
+        pos.x = handleOutOfBounds(pos.x);
+        pos.y = handleOutOfBounds(pos.y);
+        gameObject.setPos(pos);
+    }
+
+    @Override
+    protected void handleOutOfBounds() {
         handleOutOfBounds(ship);
         shipLasers.forEach(this::handleOutOfBounds);
         asteroids.forEach(this::handleOutOfBounds);
@@ -187,7 +197,7 @@ public class ClassicGame extends Game {
             screenTextManager.addText("gameOver", "Game over",
                                       new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
                                       "warning", Text.AlignMode.CENTERED);
-            dataManager.data.classicScore = score;
+            dataManager.data.classicScore = Math.max(score, dataManager.data.classicScore);
             dataManager.write();
         }
     }

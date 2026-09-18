@@ -14,7 +14,6 @@ public class Ship extends RoundGameObject {
     private static final float SIZE = 30;
 
     private final Texture thrustTexture;
-    private Vector2 forward;
     private boolean thrust;
 
     private Instant lastDeath;
@@ -24,13 +23,12 @@ public class Ship extends RoundGameObject {
         setPos(pos);
         setSize(SIZE);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
-        forward = new Vector2(0, 1);
         thrust = false;
         lastDeath = Instant.EPOCH;
     }
 
     @Override
-    String getTextureName() {
+    public String getTextureName() {
         return "assets/ship.png";
     }
 
@@ -40,13 +38,11 @@ public class Ship extends RoundGameObject {
     }
 
     public void rotateClockwise() {
-        forward.rotateDeg(- 360 * Gdx.graphics.getDeltaTime());
-        sprite.rotate(- 360 * Gdx.graphics.getDeltaTime());
+        setRotation(getRotation() - 360 * Gdx.graphics.getDeltaTime());
     }
 
     public void rotateCounterClockwise() {
-        forward.rotateDeg(360 * Gdx.graphics.getDeltaTime());
-        sprite.rotate(360 * Gdx.graphics.getDeltaTime());
+        setRotation(getRotation() + 360 * Gdx.graphics.getDeltaTime());
     }
 
     public void thrust() {

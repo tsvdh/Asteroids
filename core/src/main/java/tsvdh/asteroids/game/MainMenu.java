@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.tower_defense.TowerDefenseGame;
+import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.util.PersistentDataManager;
 import tsvdh.asteroids.util.Text;
 import tsvdh.asteroids.util.text_manager.RelativeTextManager;
@@ -18,6 +19,8 @@ public class MainMenu extends Game {
 
     private final static float WORLD_SIZE = 2000;
     private final static float CAMERA_SIZE = 2000;
+
+    private final static int SCORE_FOR_TD = 3000;
 
     private Class<? extends Game> nextGame;
 
@@ -34,16 +37,24 @@ public class MainMenu extends Game {
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/PixelOperator.ttf", viewPort);
 
         screenTextManager.addFont("normal", Color.WHITE, 0.08f);
+        screenTextManager.addFont("inactive", Color.DARK_GRAY, 0.08f);
         screenTextManager.addFont("header", Color.WHITE, 0.15f);
+
         screenTextManager.addText("header", "Asteroids",
                                   new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE * 2 / 3),
                                   "header", Text.AlignMode.CENTERED);
-        screenTextManager.addText("classic", String.format("Classic (1): %s", dataManager.data.classicScore),
+
+        screenTextManager.addText("classic", String.format("(1) Classic: %s", dataManager.data.classicScore),
                                   new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2),
                                   "normal", Text.AlignMode.CENTERED);
-        screenTextManager.addText("towerDefense", String.format("Tower Defense (2): %s", dataManager.data.towerDefenseScore),
+
+        boolean towerDefenseUnlocked = dataManager.data.classicScore >= SCORE_FOR_TD;
+        String towerDefenseText = towerDefenseUnlocked
+            ? String.format("(2) Tower Defense: %s", dataManager.data.towerDefenseScore)
+            : String.format("(2) Reach %s to unlock", SCORE_FOR_TD);
+        screenTextManager.addText("towerDefense", towerDefenseText,
                                   new Vector2(CAMERA_SIZE / 2, CAMERA_SIZE / 2 - CAMERA_SIZE * 0.08f),
-                                  "normal", Text.AlignMode.CENTERED);
+                                  towerDefenseUnlocked ? "normal" : "inactive", Text.AlignMode.CENTERED);
     }
 
     @Override
@@ -89,9 +100,13 @@ public class MainMenu extends Game {
     }
 
     @Override
-    protected float handleOutOfBounds(float val) {
-        return 0;
-    }
+    protected void handleCollisions() {}
+
+    @Override
+    protected void handleOutOfBounds(GameObject gameObject) {}
+
+    @Override
+    protected void handleOutOfBounds() {}
 
     @Override
     public boolean gameShouldExit() {

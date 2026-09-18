@@ -84,14 +84,10 @@ public abstract class Game extends ApplicationAdapter {
         return !gameOver();
     }
 
-    protected abstract float handleOutOfBounds(float val);
+    protected abstract void handleCollisions();
 
-    protected void handleOutOfBounds(GameObject gameObject) {
-        Vector2 pos = gameObject.getPos();
-        pos.x = handleOutOfBounds(pos.x);
-        pos.y = handleOutOfBounds(pos.y);
-        gameObject.setPos(pos);
-    }
+    protected abstract void handleOutOfBounds(GameObject gameObject);
+    protected abstract void handleOutOfBounds();
 
     public abstract boolean gameShouldExit();
 

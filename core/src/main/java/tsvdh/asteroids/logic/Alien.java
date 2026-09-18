@@ -22,7 +22,7 @@ public class Alien extends RoundGameObject {
     }
 
     @Override
-    String getTextureName() {
+    public String getTextureName() {
         return "assets/alien.png";
     }
 

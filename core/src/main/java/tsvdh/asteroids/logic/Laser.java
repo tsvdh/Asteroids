@@ -23,7 +23,7 @@ public class Laser extends RoundGameObject {
     }
 
     @Override
-    String getTextureName() {
+    public String getTextureName() {
         return "assets/laser.png";
     }
 

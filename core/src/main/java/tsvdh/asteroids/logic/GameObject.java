@@ -16,11 +16,13 @@ public abstract class GameObject {
     Vector2 movement;
     float size;
     boolean destroyed = false;
+    Vector2 forward;
 
     public GameObject(Map<String, Texture> textures) {
         texture = textures.get(getTextureName());
         sprite = getSprite(texture);
         movement = new Vector2();
+        setForward(new Vector2(0, 1));
     }
 
     public Vector2 getPos() {
@@ -43,11 +45,19 @@ public abstract class GameObject {
         return sprite;
     }
 
+    public Vector2 getForward() {
+        return forward;
+    }
+
+    public float getRotation() {
+        return forward.angleDeg();
+    }
+
     public boolean isDestroyed() {
         return destroyed;
     }
 
-    Sprite getSprite(Texture texture) {
+    private Sprite getSprite(Texture texture) {
         Sprite sprite = new Sprite(texture);
         float ratio = sprite.getHeight() / sprite.getWidth();
         sprite.setSize(1, ratio);
@@ -55,7 +65,7 @@ public abstract class GameObject {
         return sprite;
     }
 
-    abstract String getTextureName();
+    public abstract String getTextureName();
 
     public void setPos(Vector2 newPos) {
         pos = newPos;
@@ -68,7 +78,17 @@ public abstract class GameObject {
 
     public void setSize(float newSize) {
         this.size = newSize;
-        this.sprite.setScale(newSize);
+        sprite.setScale(newSize);
+    }
+
+    public void setForward(Vector2 forward) {
+        this.forward = forward;
+        sprite.setRotation(forward.angleDeg() - 90);
+    }
+
+    public void setRotation(float rotation) {
+        forward = new Vector2(1, 0).rotateDeg(rotation);
+        sprite.setRotation(rotation - 90);
     }
 
     public void destroy() {

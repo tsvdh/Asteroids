@@ -23,7 +23,7 @@ public class Asteroid extends RoundGameObject {
     }
 
     @Override
-    String getTextureName() {
+    public String getTextureName() {
         return String.format("assets/asteroids/asteroid%s.png", textureRng.nextInt(5) + 1);
     }
 
