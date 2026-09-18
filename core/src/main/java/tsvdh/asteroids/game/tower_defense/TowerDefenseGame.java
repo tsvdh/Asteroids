@@ -24,6 +24,11 @@ public class TowerDefenseGame extends Game {
 
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
+    private final Collection<BorderGenerator.Border> borders = new LinkedList<>();
+    private GameObject worldBackground;
+    private GameObject outOfBoundsBackground;
+
+    private BorderGenerator borderGenerator;
 
     private AbsoluteTextManager textManager;
 
@@ -41,10 +46,33 @@ public class TowerDefenseGame extends Game {
         return CAMERA_SIZE;
     }
 
+    private void makeBackground() {
+        worldBackground = new GameObject(textures) {
+            @Override
+            public String getTextureName() {
+                return "assets/backgrounds/background_black.png";
+            }
+        };
+        worldBackground.setSize(WORLD_SIZE);
+        worldBackground.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+
+        outOfBoundsBackground = new GameObject(textures) {
+            @Override
+            public String getTextureName() {
+                return "assets/backgrounds/background_gray.png";
+            }
+        };
+        outOfBoundsBackground.setSize(WORLD_SIZE * 2);
+        outOfBoundsBackground.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+    }
+
     @Override
     public void create() {
         super.create();
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        borderGenerator = new BorderGenerator(textures, WORLD_SIZE, 500);
+        borders.addAll(borderGenerator.makeBorderParts());
+        makeBackground();
 
         textManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
         textManager.addFont("normal", Color.ORANGE, 50);
@@ -75,8 +103,12 @@ public class TowerDefenseGame extends Game {
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
 
+        outOfBoundsBackground.draw(spriteBatch);
+        worldBackground.draw(spriteBatch);
+
         ship.draw(spriteBatch);
 
+        borders.forEach(border -> border.draw(spriteBatch));
         textManager.draw();
 
         spriteBatch.end();

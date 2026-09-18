@@ -9,16 +9,16 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
-public class AlienSpawner extends ClassicSpawner {
+class AlienSpawner extends ClassicSpawner {
 
     private Instant lastSpawn;
 
-    protected AlienSpawner(float worldSize, float bufferSize) {
+    AlienSpawner(float worldSize, float bufferSize) {
         super(worldSize, bufferSize);
         lastSpawn = Instant.now();
     }
 
-    public void spawn(Collection<Alien> aliens, Map<String, Texture> textures) {
+    void spawn(Collection<Alien> aliens, Map<String, Texture> textures) {
         if (aliens.size() >= 2 || Duration.between(lastSpawn, Instant.now()).toMillis() < 20000)
             return;
 

@@ -33,10 +33,6 @@ public abstract class GameObject {
         return movement;
     }
 
-    public float getScale() {
-        return size;
-    }
-
     public float getSize() {
         return size;
     }

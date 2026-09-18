@@ -12,11 +12,11 @@ public class AsteroidSpawner extends ClassicSpawner {
 
     private static final int MAX_ASTEROIDS = 20;
 
-    protected AsteroidSpawner(float worldSize, float bufferSize) {
+    AsteroidSpawner(float worldSize, float bufferSize) {
         super(worldSize, bufferSize);
     }
 
-    public void spawn(Collection<Asteroid> asteroids, Map<String, Texture> textures) {
+    void spawn(Collection<Asteroid> asteroids, Map<String, Texture> textures) {
         boolean bigAsteroidLimit = asteroids.stream()
             .filter(asteroid -> asteroid.getType() == 0)
             .toList().size() >= 10;
@@ -31,7 +31,7 @@ public class AsteroidSpawner extends ClassicSpawner {
         asteroids.add(asteroid);
     }
 
-    public void spawnFromDestroyed(Asteroid destroyed, Collection<Asteroid> asteroids,
+    void spawnFromDestroyed(Asteroid destroyed, Collection<Asteroid> asteroids,
                                    Collection<Asteroid> newAsteroids, Map<String, Texture> textures) {
         if (destroyed.getType() == 2)
             return;

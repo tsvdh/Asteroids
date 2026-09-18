@@ -8,7 +8,7 @@ public abstract class ClassicSpawner extends Spawner {
     private final float worldSize;
     private final float bufferSize;
 
-    protected ClassicSpawner(float worldSize, float bufferSize) {
+    ClassicSpawner(float worldSize, float bufferSize) {
         super();
         this.worldSize = worldSize;
         this.bufferSize = bufferSize;
