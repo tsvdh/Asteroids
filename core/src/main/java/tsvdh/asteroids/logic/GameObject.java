@@ -22,7 +22,6 @@ public abstract class GameObject {
         texture = textures.get(getTextureName());
         sprite = getSprite(texture);
         movement = new Vector2();
-        setForward(new Vector2(0, 1));
     }
 
     public Vector2 getPos() {

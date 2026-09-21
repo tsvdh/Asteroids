@@ -8,9 +8,9 @@ import java.util.Random;
 
 public class Asteroid extends RoundGameObject {
 
-    private static final float[] SIZES = {100, 60, 30};
-    private static final float[] SPEEDS = {50, 100, 150};
-    private static final int[] SCORES = {10, 20, 40};
+    private static final float[] SIZES = {100, 60, 30, 60};
+    private static final float[] SPEEDS = {50, 100, 150, 200};
+    private static final int[] SCORES = {10, 20, 40, 100};
 
     private static final Random textureRng = new Random();
     private final int type;

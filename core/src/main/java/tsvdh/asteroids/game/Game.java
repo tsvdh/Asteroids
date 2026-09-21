@@ -74,7 +74,7 @@ public abstract class Game extends ApplicationAdapter {
                 ship.rotateClockwise();
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
-                shipLasers.add(ship.shootLaser(textures));
+                ship.shootLaser(shipLasers, textures);
         }
     }
 

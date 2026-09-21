@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 
 public class Ship extends RoundGameObject {
@@ -17,14 +18,18 @@ public class Ship extends RoundGameObject {
     private boolean thrust;
 
     private Instant lastDeath;
+    private Duration shootInterval;
+    private Instant lastShot;
 
-    public Ship(Map<String, Texture> textures, Vector2 pos) {
+    public Ship(Map<String, Texture> textures, Vector2 pos, Duration shootInterval) {
         super(textures);
         setPos(pos);
         setSize(SIZE);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
         thrust = false;
         lastDeath = Instant.EPOCH;
+        this.shootInterval = shootInterval;
+        lastShot = Instant.EPOCH;
     }
 
     @Override
@@ -66,10 +71,14 @@ public class Ship extends RoundGameObject {
         super.logic();
     }
 
-    public Laser shootLaser(Map<String, Texture> textures) {
+    public void shootLaser(Collection<Laser> shipLasers, Map<String, Texture> textures) {
+        if (Duration.between(lastShot, Instant.now()).compareTo(shootInterval) < 0)
+            return;
+
         var laser = new Laser(textures, pos.cpy().add(forward.cpy().setLength(size)), Duration.ofSeconds(1));
         laser.setMovement(forward.cpy().setLength(500));
-        return laser;
+        shipLasers.add(laser);
+        lastShot = Instant.now();
     }
 
     @Override

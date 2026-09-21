@@ -65,6 +65,7 @@
   - 'enter' to shoot a laser
     - 500m/s laser speed
     - 1sec lifetime
+    - shoot interval 200ms
   - Asteroids spawn randomly on boundary
     - speed: 50m/s -> 100m/s -> 150m/s
     - sizes: 100 -> 60 -> 30
@@ -82,3 +83,12 @@
       - 2sec lifetime
   - On asteroid hit, respawn at center
     - Invincible for 2 seconds
+- Tower Defense
+  - ship same as classic, except:
+    - shoot interval: 500ms
+  - Mining speed: 1/sec
+  - Asteroids spawn randomly on boundary
+    - speed: 200m/s
+    - size: 60
+    - spawn: 2/s
+    - health: 3

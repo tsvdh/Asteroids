@@ -19,6 +19,7 @@ public abstract class RectangularGameObject extends GameObject {
         sizeRatio = (float) texture.getHeight() / texture.getWidth();
         width = 1;
         height = sizeRatio;
+        collider = new Rectangle(0, 0, 1, height);
     }
 
     @Override
@@ -41,5 +42,9 @@ public abstract class RectangularGameObject extends GameObject {
     @Override
     public void setRotation(float rotation) {
         throw new RuntimeException("Can't rotate rectangular object");
+    }
+
+    public final Rectangle getCollider() {
+        return collider;
     }
 }

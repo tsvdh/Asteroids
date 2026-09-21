@@ -57,7 +57,7 @@ public class ClassicGame extends Game {
     @Override
     public void create() {
         super.create();
-        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
+        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2), Duration.ofMillis(200));
         ship.setForward(new Vector2(0, 1));
         lives = 3;
 

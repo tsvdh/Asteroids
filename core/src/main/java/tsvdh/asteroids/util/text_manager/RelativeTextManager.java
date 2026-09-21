@@ -32,7 +32,7 @@ public class RelativeTextManager extends TextManager {
         fontManager.resizeFonts(viewport.getWorldHeight());
         texts.values().forEach(text -> {
             BitmapFont font = fontManager.getFont(text.fontName());
-            text.glyphLayout().setText(font, text.text());
+            text.glyphLayout().setText(font, text.textHolder().text);
         });
     }
 

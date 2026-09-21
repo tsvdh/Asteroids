@@ -23,7 +23,7 @@ abstract class TextManager {
     public void addText(String textName, String text, Vector2 pos, String fontName, Text.AlignMode mode) {
         BitmapFont font = getFontManager().getFont(fontName);
         var glyphLayout = new GlyphLayout(font, text);
-        texts.put(textName, new Text(glyphLayout, pos, fontName, mode, text));
+        texts.put(textName, new Text(glyphLayout, pos, fontName, mode, new Text.TextHolder(text)));
     }
 
     public void removeText(String textName) {
@@ -32,6 +32,7 @@ abstract class TextManager {
 
     public void changeText(String textName, String newText) {
         Text text = texts.get(textName);
+        text.textHolder().text = newText;
         BitmapFont font = getFontManager().getFont(text.fontName());
         text.glyphLayout().setText(font, newText);
     }

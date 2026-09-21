@@ -13,6 +13,7 @@ public abstract class RoundGameObject extends GameObject {
     public RoundGameObject(Map<String, Texture> textures) {
         super(textures);
         collider = new Circle(0, 0, 0.5f);
+        setForward(new Vector2(0, 1));
     }
 
     public final Circle getCollider() {

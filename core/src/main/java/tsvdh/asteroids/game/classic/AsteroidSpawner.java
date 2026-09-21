@@ -8,7 +8,7 @@ import tsvdh.asteroids.logic.Spawner;
 import java.util.Collection;
 import java.util.Map;
 
-public class AsteroidSpawner extends ClassicSpawner {
+class AsteroidSpawner extends ClassicSpawner {
 
     private static final int MAX_ASTEROIDS = 20;
 
@@ -27,7 +27,7 @@ public class AsteroidSpawner extends ClassicSpawner {
         Vector2 spawnPos = getBoundaryPos();
         var asteroid = new Asteroid(textures, spawnPos, 0);
         asteroid.setDirection(getRandomDir());
-        asteroid.getSprite().setRotation(rng.nextInt(360));
+        asteroid.setRotation(rng.nextInt(360));
         asteroids.add(asteroid);
     }
 
