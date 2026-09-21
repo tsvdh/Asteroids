@@ -1,4 +1,4 @@
-package tsvdh.asteroids.util;
+package tsvdh.asteroids.util.text_manager;
 
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;

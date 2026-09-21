@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Vector2;
-import tsvdh.asteroids.util.Text;
 import tsvdh.asteroids.util.font_manager.FontManager;
 
 import java.util.HashMap;

@@ -2,8 +2,6 @@ package tsvdh.asteroids.util.text_manager;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
-import tsvdh.asteroids.util.Text;
 import tsvdh.asteroids.util.font_manager.AbsoluteFontManager;
 import tsvdh.asteroids.util.font_manager.FontManager;
 

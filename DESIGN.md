@@ -11,10 +11,9 @@
     - Spaceship with movement and physics
         - Momentum decays over time
         - Lose a life when hit
-            - Three lives
+            - 3 lives
             - Reset to center
     - Laser shooting
-        - 'spacebar' to shoot laser
     - Destructible asteroids
         - Three sizes, upon laser hit split into smaller
     - Aliens
@@ -32,13 +31,26 @@
   - Spaceship with movement and physics
     - Momentum decays over time
     - Lose a life when hit
-      - Three lives
+      - 5 lives
       - Reset away from border
+      - Respawn timer
     - Camera follows ship 
       - Camera keeps away from border
   - Laser shooting
-    - 'spacebar' to shoot laser
-  - 
+    - Limited shot frequency
+  - Asteroids take multiple hits and are fast
+  - Iron patches
+    - Several randomly in world
+    - Mine manually
+  - Use iron to build towers
+    - Miner
+    - Asteroid turret
+    - Defense turret
+  - Iron mining (ship and miner) triggers aliens
+    - Aliens send rockets at miners
+    - Alien ships attack player
+    - Mining increases wave frequency and size
+  - Pay iron to rebuild ship instantly instead of losing life
 
 ### Specification
 - Normal Asteroids

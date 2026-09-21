@@ -10,7 +10,7 @@ import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.tower_defense.TowerDefenseGame;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.util.PersistentDataManager;
-import tsvdh.asteroids.util.Text;
+import tsvdh.asteroids.util.text_manager.Text;
 import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
 import java.util.Map;

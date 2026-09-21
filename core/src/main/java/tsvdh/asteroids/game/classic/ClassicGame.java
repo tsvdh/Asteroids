@@ -11,7 +11,7 @@ import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.Ship;
 import tsvdh.asteroids.util.PersistentDataManager;
-import tsvdh.asteroids.util.Text;
+import tsvdh.asteroids.util.text_manager.Text;
 import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
 import java.time.Duration;

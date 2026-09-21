@@ -7,13 +7,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import tsvdh.asteroids.game.Game;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
+import tsvdh.asteroids.logic.RoundGameObject;
 import tsvdh.asteroids.logic.Ship;
 import tsvdh.asteroids.util.PersistentDataManager;
-import tsvdh.asteroids.util.Text;
+import tsvdh.asteroids.util.text_manager.Text;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
 import tsvdh.asteroids.util.text_manager.RelativeTextManager;
 
@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Random;
 
 public class TowerDefenseGame extends Game {
 
@@ -34,9 +35,10 @@ public class TowerDefenseGame extends Game {
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
     private final Collection<BorderGenerator.Border> borders = new LinkedList<>();
+    private final Collection<RoundGameObject> ironPatches = new LinkedList<>();
+
     private GameObject worldBackground;
     private GameObject outOfBoundsBackground;
-
     private BorderGenerator borderGenerator;
 
     private int lives;
@@ -81,22 +83,29 @@ public class TowerDefenseGame extends Game {
         outOfBoundsBackground.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
     }
 
+    private void makeOrePatches() {
+        Random rng = new Random(0);
+        
+    }
+
     @Override
     public void create() {
         super.create();
         currentZoom = STARTING_ZOOM;
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
-        lives = 3;
+        lives = 5;
 
         borderGenerator = new BorderGenerator(textures, WORLD_SIZE, 500);
         borders.addAll(borderGenerator.makeBorderParts());
         makeBackground();
 
+        makeOrePatches();
+
         worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
-        worldTextManager.addFont("normal", Color.ORANGE, 100);
-        worldTextManager.addText("test", "Hello world!",
-                                 new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
-                                 "normal", Text.AlignMode.CENTERED);
+        worldTextManager.addFont("normal", Color.WHITE, 30);
+        // worldTextManager.addText("test", "Hello world!",
+        //                          new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
+        //                          "normal", Text.AlignMode.CENTERED);
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
@@ -144,7 +153,8 @@ public class TowerDefenseGame extends Game {
     protected void draw() {
         ScreenUtils.clear(Color.BLACK);
 
-        viewPort.getCamera().position.set(new Vector3(ship.getPos(), 0));
+        Vector2 cameraPos = clampToWorld(ship.getPos(), (CAMERA_SIZE / 2) - 100);
+        viewPort.getCamera().position.set(new Vector3(cameraPos, 0));
         viewPort.apply();
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
@@ -190,5 +200,12 @@ public class TowerDefenseGame extends Game {
     public void dispose() {
         super.dispose();
         worldTextManager.dispose();
+    }
+
+    private Vector2 clampToWorld(Vector2 pos, float margin) {
+        Vector2 clamped = new Vector2();
+        clamped.x = Math.clamp(pos.x, margin, WORLD_SIZE - margin);
+        clamped.y = Math.clamp(pos.y, margin, WORLD_SIZE - margin);
+        return clamped;
     }
 }
