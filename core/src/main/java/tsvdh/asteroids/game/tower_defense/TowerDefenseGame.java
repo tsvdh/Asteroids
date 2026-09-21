@@ -118,12 +118,10 @@ public class TowerDefenseGame extends Game {
 
         worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
         worldTextManager.addFont("normal", Color.WHITE, 30);
-        // worldTextManager.addText("test", "Hello world!",
-        //                          new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
-        //                          "normal", Text.AlignMode.CENTERED);
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
+        screenTextManager.addFont("warning_big", Color.RED, 0.1f);
         float textMargin = 0.02f;
         screenTextManager.addText("lives", String.format("Lives: %s", lives),
                                   new Vector2(textMargin, 1 - textMargin),
@@ -195,7 +193,9 @@ public class TowerDefenseGame extends Game {
 
         ironPatches.forEach(iron -> iron.draw(spriteBatch));
 
-        ship.draw(spriteBatch);
+        if (notGameOver())
+            ship.draw(spriteBatch);
+
         shipLasers.forEach(laser -> laser.draw(spriteBatch));
         asteroids.forEach(asteroid -> asteroid.draw(spriteBatch));
 
@@ -208,11 +208,14 @@ public class TowerDefenseGame extends Game {
 
     @Override
     protected boolean gameOver() {
-        return false;
+        return lives <= 0;
     }
 
     @Override
     protected void handleCollisions() {
+        if (gameOver())
+            return;
+
         canMine = false;
         ironPatches.forEach(patch -> {
             if (patch.getCollider().contains(ship.getPos()))
@@ -220,6 +223,8 @@ public class TowerDefenseGame extends Game {
         });
 
         asteroids.forEach(asteroid -> {
+            if (asteroid.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable())
+                destroyShip();
 
             shipLasers.forEach(laser -> {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
@@ -242,7 +247,12 @@ public class TowerDefenseGame extends Game {
     protected void handleOutOfBounds(GameObject gameObject) {
         if (isDimensionOutOfBounds(gameObject.getPos().x)
             || isDimensionOutOfBounds(gameObject.getPos().y))
-            gameObject.destroy();
+        {
+            if (gameObject instanceof Ship)
+                destroyShip();
+            else
+                gameObject.destroy();
+        }
     }
 
     @Override
@@ -272,5 +282,21 @@ public class TowerDefenseGame extends Game {
     void mine() {
         iron += 1 * Gdx.graphics.getDeltaTime();
         screenTextManager.changeText("iron", String.format("Iron: %.1f", iron));
+    }
+
+    private void destroyShip() {
+        lives--;
+        screenTextManager.changeText("lives", String.format("Lives: %s", lives));
+        ship.destroy();
+        ship.setPos(clampToWorld(ship.getPos(), 100));
+
+        if (gameOver()) {
+            gameOverInstant = Instant.now();
+            screenTextManager.addText("gameOver", "Game over",
+                                      new Vector2(0.5f, 0.5f),
+                                      "warning_big", Text.AlignMode.CENTERED);
+            dataManager.data.towerDefenseScore = Math.max(score, dataManager.data.towerDefenseScore);
+            dataManager.write();
+        }
     }
 }

@@ -39,7 +39,8 @@ public class Ship extends RoundGameObject {
 
     @Override
     public void draw(SpriteBatch batch) {
-        super.draw(batch);
+        if (shouldDraw())
+            super.draw(batch);
     }
 
     public void rotateClockwise() {

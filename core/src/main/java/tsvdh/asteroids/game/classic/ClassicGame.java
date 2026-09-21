@@ -210,7 +210,7 @@ public class ClassicGame extends Game {
         spriteBatch.setProjectionMatrix(viewPort.getCamera().combined);
         spriteBatch.begin();
 
-        if (notGameOver() && ship.shouldDraw())
+        if (notGameOver())
             ship.draw(spriteBatch);
 
         shipLasers.forEach(laser -> laser.draw(spriteBatch));
@@ -236,6 +236,7 @@ public class ClassicGame extends Game {
 
     @Override
     public void dispose() {
+        super.dispose();
         screenTextManager.dispose();
     }
 }
