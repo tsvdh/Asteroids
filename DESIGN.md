@@ -97,7 +97,21 @@
     - Miner
       - '1' to build, cost 10
       - Miner rate 0.5/sec
-      - Health 3
+      - Health 1
     - Asteroid turret
+      - Shoot instant lasers 
       - Damage within 200m
       - 200ms cooldown
+      - Health 2
+    - Defense turret
+      - 50ms cooldown
+      - Shoot lasers
+        - 1 sec lifetime
+        - 500m/s
+      - Health 3
+  - Aliens
+    - speed 150m/s
+    - scale from min to max intensity based on score
+      - min: score 0, interval 1min, amount 1
+      - max: score 10000, interval 1sec, amount 10
+    - health 5 (only one laser from ship)

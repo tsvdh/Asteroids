@@ -19,7 +19,7 @@ public abstract class Building extends RectangularGameObject implements Damageab
     private AbsoluteTextManager textManager;
     private int id;
 
-    public Building(Map<String, Texture> textures, Vector2 pos, AbsoluteTextManager textManager) {
+    protected Building(Map<String, Texture> textures, Vector2 pos, AbsoluteTextManager textManager) {
         super(textures);
         setSize(90);
         point = Point.fromPos(pos);

@@ -11,16 +11,15 @@ import java.util.Map;
 
 public class AsteroidSpawner extends TowerDefenseSpawner {
 
-    private final Duration spawnInterval;
-    private Instant lastSpawn = Instant.EPOCH;
+    private final Collection<ToughAsteroid> asteroids;
 
-    AsteroidSpawner(float worldSize, Duration spawnInterval) {
-        super(worldSize);
-        this.spawnInterval = spawnInterval;
+    AsteroidSpawner(float worldSize, Duration spawnInterval, Collection<ToughAsteroid> asteroids) {
+        super(worldSize, spawnInterval);
+        this.asteroids = asteroids;
     }
 
-    void spawn(Collection<ToughAsteroid> asteroids, Map<String, Texture> textures) {
-        if (Duration.between(lastSpawn, Instant.now()).compareTo(spawnInterval) < 0)
+    void spawn(Map<String, Texture> textures) {
+        if (mustWait())
             return;
 
         Vector2 spawnPos = getBoundaryPos();

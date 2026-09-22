@@ -110,13 +110,16 @@ public class Ship extends RoundGameObject implements Miner, Damageable {
         return 1 * Gdx.graphics.getDeltaTime();
     }
 
+    public void resetMovement() {
+        setMovement(new Vector2(0, 0));
+        forward = new Vector2(0, 1);
+        sprite.setRotation(0);
+    }
+
     @Override
     public void damage() {
         health--;
         if (health > 0) {
-            setMovement(new Vector2(0, 0));
-            forward = new Vector2(0, 1);
-            sprite.setRotation(0);
             lastDeath = Instant.now();
         } else {
             super.destroy();

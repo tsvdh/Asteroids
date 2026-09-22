@@ -3,26 +3,20 @@ package tsvdh.asteroids.game.tower_defense.buildings;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import tsvdh.asteroids.game.tower_defense.ToughAsteroid;
+import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
-public class AsteroidTurret extends Building {
+public class AsteroidTurret extends ShootingBuilding {
 
-    private final Collection<ToughAsteroid> asteroids;
-    private Duration coolDown;
-    private Instant lastShot;
-    private MineLaserManager mineLaserManager;
+    private final MineLaserManager mineLaserManager;
 
     public AsteroidTurret(Map<String, Texture> textures, Vector2 pos, AbsoluteTextManager textManager,
                           Collection<ToughAsteroid> asteroids, MineLaserManager mineLaserManager) {
-        super(textures, pos, textManager);
-        this.asteroids = asteroids;
-        coolDown = Duration.ofMillis(200);
-        lastShot = Instant.EPOCH;
+        super(textures, pos, textManager, Duration.ofMillis(200), asteroids, 200);
         this.mineLaserManager = mineLaserManager;
     }
 
@@ -37,16 +31,9 @@ public class AsteroidTurret extends Building {
     }
 
     @Override
-    public void logic() {
-        super.logic();
-
-        asteroids.forEach(asteroid -> {
-            if (asteroid.getPos().cpy().sub(getPos()).len() < 200
-                    && Duration.between(lastShot, Instant.now()).compareTo(coolDown) >= 0) {
-                asteroid.damage();
-                lastShot = Instant.now();
-                mineLaserManager.addLine(getPos(), asteroid.getPos().cpy());
-            }
-        });
+    void onShot(GameObject target) {
+        var asteroid = (ToughAsteroid) target;
+        asteroid.damage();
+        mineLaserManager.addLine(getPos(), asteroid.getPos().cpy());
     }
 }

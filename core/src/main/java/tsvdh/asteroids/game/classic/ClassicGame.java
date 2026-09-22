@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import tsvdh.asteroids.game.Game;
-import tsvdh.asteroids.logic.Alien;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
@@ -186,6 +185,7 @@ public class ClassicGame extends Game {
     }
 
     private void damageShip() {
+        ship.resetMovement();
         ship.damage();
         screenTextManager.changeText("lives", String.format("Lives: %s", ship.getHealth()));
         ship.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));

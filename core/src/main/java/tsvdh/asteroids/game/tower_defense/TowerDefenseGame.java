@@ -5,13 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import tsvdh.asteroids.game.Game;
 import tsvdh.asteroids.game.tower_defense.buildings.AsteroidTurret;
 import tsvdh.asteroids.game.tower_defense.buildings.Building;
+import tsvdh.asteroids.game.tower_defense.buildings.DefenseTurret;
 import tsvdh.asteroids.game.tower_defense.buildings.MineBuilding;
 import tsvdh.asteroids.game.tower_defense.buildings.MineLaserManager;
 import tsvdh.asteroids.logic.Asteroid;
@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class TowerDefenseGame extends Game {
@@ -41,6 +42,7 @@ public class TowerDefenseGame extends Game {
 
     private static final int MINE_BUILDING_COST = 1;
     private static final int ASTEROID_TURRET_COST = 1;
+    private static final int DEFENSE_TURRET_COST = 1;
 
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
@@ -48,8 +50,13 @@ public class TowerDefenseGame extends Game {
     private final Collection<RectangularGameObject> ironPatches = new LinkedList<>();
     private final Collection<ToughAsteroid> asteroids = new LinkedList<>();
     private AsteroidSpawner asteroidSpawner;
+    private final Collection<Laser> turretLasers = new LinkedList<>();
+    private final Collection<Alien> aliens = new LinkedList<>();
+    private AlienManager alienManager;
+
     private final Collection<MineBuilding> mineBuildings = new LinkedList<>();
     private final Collection<AsteroidTurret> asteroidTurrets = new LinkedList<>();
+    private final Collection<DefenseTurret> defenseTurrets = new LinkedList<>();
 
     private GameObject worldBackground;
     private GameObject outOfBoundsBackground;
@@ -77,6 +84,14 @@ public class TowerDefenseGame extends Game {
     @Override
     protected float getCameraSize() {
         return CAMERA_SIZE;
+    }
+
+    private Collection<Building> getAllBuildings() {
+        var list = new LinkedList<Building>();
+        list.addAll(mineBuildings);
+        list.addAll(asteroidTurrets);
+        list.addAll(defenseTurrets);
+        return list;
     }
 
     private void makeBackground() {
@@ -125,7 +140,8 @@ public class TowerDefenseGame extends Game {
 
         makeIronPatches();
 
-        asteroidSpawner = new AsteroidSpawner(WORLD_SIZE, Duration.ofMillis(2000));
+        asteroidSpawner = new AsteroidSpawner(WORLD_SIZE, Duration.ofMillis(2000), asteroids);
+        alienManager = new AlienManager(WORLD_SIZE, aliens, (List<AsteroidTurret>) asteroidTurrets, ship);
 
         mineLaserManager = new MineLaserManager(viewPort);
 
@@ -179,6 +195,8 @@ public class TowerDefenseGame extends Game {
             buildMineBuilding();
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
             buildAsteroidTurret();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
+            buildDefenseTurret();
     }
 
     @Override
@@ -186,11 +204,17 @@ public class TowerDefenseGame extends Game {
         ship.logic();
         shipLasers.forEach(Laser::logic);
 
-        asteroidSpawner.spawn(asteroids, textures);
+        asteroidSpawner.spawn(textures);
         asteroids.forEach(Asteroid::logic);
+
+        alienManager.spawn(textures, score);
+        alienManager.retarget();
 
         mineBuildings.forEach(mineMachine -> addIron(mineMachine.mine()));
         asteroidTurrets.forEach(AsteroidTurret::logic);
+        defenseTurrets.forEach(DefenseTurret::logic);
+        turretLasers.forEach(Laser::logic);
+        aliens.forEach(Alien::logic);
 
         handleCollisions();
         handleOutOfBounds();
@@ -206,6 +230,9 @@ public class TowerDefenseGame extends Game {
         asteroids.removeIf(GameObject::isDestroyed);
         mineBuildings.removeIf(GameObject::isDestroyed);
         asteroidTurrets.removeIf(GameObject::isDestroyed);
+        defenseTurrets.removeIf(GameObject::isDestroyed);
+        turretLasers.removeIf(GameObject::isDestroyed);
+        aliens.removeIf(GameObject::isDestroyed);
     }
 
     @Override
@@ -224,8 +251,10 @@ public class TowerDefenseGame extends Game {
         worldBackground.draw(spriteBatch);
 
         ironPatches.forEach(iron -> iron.draw(spriteBatch));
-        mineBuildings.forEach(mineMachine -> mineMachine.draw(spriteBatch));
-        asteroidTurrets.forEach(asteroidTurret -> asteroidTurret.draw(spriteBatch));
+
+        getAllBuildings().forEach(building -> building.draw(spriteBatch));
+        turretLasers.forEach(laser -> laser.draw(spriteBatch));
+        aliens.forEach(alien -> alien.draw(spriteBatch));
 
         if (notGameOver())
             ship.draw(spriteBatch);
@@ -269,16 +298,30 @@ public class TowerDefenseGame extends Game {
                 }
             });
 
-            mineBuildings.forEach(mineBuilding -> {
+            getAllBuildings().forEach(mineBuilding -> {
                 if (asteroid.getRectangleCollider().overlaps(mineBuilding.getCollider())) {
                     mineBuilding.damage();
                     asteroid.damageMax();
                 }
             });
-            asteroidTurrets.forEach(asteroidTurret -> {
-                if (asteroid.getRectangleCollider().overlaps(asteroidTurret.getCollider())) {
-                    asteroidTurret.damage();
-                    asteroid.damageMax();
+        });
+
+        aliens.forEach(alien -> {
+            if (alien.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable()) {
+                damageShip();
+                alien.damageMax();
+            }
+
+            shipLasers.forEach(laser -> {
+                if (alien.getCollider().overlaps(laser.getCollider())) {
+                    alien.damageMax();
+                    laser.destroy();
+                }
+            });
+            turretLasers.forEach(laser -> {
+                if (alien.getCollider().overlaps(laser.getCollider())) {
+                    alien.damage();
+                    laser.destroy();
                 }
             });
         });
@@ -367,14 +410,19 @@ public class TowerDefenseGame extends Game {
                                                asteroids, mineLaserManager));
     }
 
+    private void buildDefenseTurret() {
+        if (iron < DEFENSE_TURRET_COST || isSpotTaken(ship.getPos()))
+            return;
+
+        removeIron(DEFENSE_TURRET_COST);
+        defenseTurrets.add(new DefenseTurret(textures, ship.getPos(), worldTextManager,
+                                             aliens, turretLasers));
+    }
+
     private boolean isSpotTaken(Vector2 pos) {
         Point point = Point.fromPos(pos);
 
-        for (Building mineBuilding : mineBuildings) {
-            if (mineBuilding.getPoint().equals(point))
-                return true;
-        }
-        for (Building building : asteroidTurrets) {
+        for (Building building : getAllBuildings()) {
             if (building.getPoint().equals(point))
                 return true;
         }
