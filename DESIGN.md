@@ -98,3 +98,6 @@
       - '1' to build, cost 10
       - Miner rate 0.5/sec
       - Health 3
+    - Asteroid turret
+      - Damage within 200m
+      - 200ms cooldown

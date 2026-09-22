@@ -3,12 +3,17 @@ package tsvdh.asteroids.game.tower_defense;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.tower_defense.buildings.AsteroidTurret;
+import tsvdh.asteroids.game.tower_defense.buildings.Building;
 import tsvdh.asteroids.game.tower_defense.buildings.MineBuilding;
+import tsvdh.asteroids.game.tower_defense.buildings.MineLaserManager;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
@@ -34,7 +39,8 @@ public class TowerDefenseGame extends Game {
     private static float CAMERA_SIZE = ZOOM_LEVELS[STARTING_ZOOM];
     private int currentZoom;
 
-    private static final int MINER_COST = 1;
+    private static final int MINE_BUILDING_COST = 1;
+    private static final int ASTEROID_TURRET_COST = 1;
 
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
@@ -43,6 +49,7 @@ public class TowerDefenseGame extends Game {
     private final Collection<ToughAsteroid> asteroids = new LinkedList<>();
     private AsteroidSpawner asteroidSpawner;
     private final Collection<MineBuilding> mineBuildings = new LinkedList<>();
+    private final Collection<AsteroidTurret> asteroidTurrets = new LinkedList<>();
 
     private GameObject worldBackground;
     private GameObject outOfBoundsBackground;
@@ -53,6 +60,7 @@ public class TowerDefenseGame extends Game {
     private Instant gameOverInstant;
     boolean canMine;
 
+    private MineLaserManager mineLaserManager;
 
     private AbsoluteTextManager worldTextManager;
     private RelativeTextManager screenTextManager;
@@ -119,6 +127,8 @@ public class TowerDefenseGame extends Game {
 
         asteroidSpawner = new AsteroidSpawner(WORLD_SIZE, Duration.ofMillis(2000));
 
+        mineLaserManager = new MineLaserManager(viewPort);
+
         worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
         worldTextManager.addFont("building", Color.BLACK, 20);
 
@@ -167,6 +177,8 @@ public class TowerDefenseGame extends Game {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
             buildMineBuilding();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
+            buildAsteroidTurret();
     }
 
     @Override
@@ -178,18 +190,29 @@ public class TowerDefenseGame extends Game {
         asteroids.forEach(Asteroid::logic);
 
         mineBuildings.forEach(mineMachine -> addIron(mineMachine.mine()));
+        asteroidTurrets.forEach(AsteroidTurret::logic);
 
         handleCollisions();
         handleOutOfBounds();
 
+        asteroids.forEach(asteroid -> {
+            if (asteroid.isDestroyed()) {
+                score += asteroid.getScore();
+                screenTextManager.changeText("score", String.format("Score: %s", score));
+            }
+        });
+
         shipLasers.removeIf(GameObject::isDestroyed);
         asteroids.removeIf(GameObject::isDestroyed);
         mineBuildings.removeIf(GameObject::isDestroyed);
+        asteroidTurrets.removeIf(GameObject::isDestroyed);
     }
 
     @Override
     protected void draw() {
         ScreenUtils.clear(Color.BLACK);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         Vector2 cameraPos = clampToWorld(ship.getPos(), (CAMERA_SIZE / 2) - 100);
         viewPort.getCamera().position.set(new Vector3(cameraPos, 0));
@@ -202,6 +225,7 @@ public class TowerDefenseGame extends Game {
 
         ironPatches.forEach(iron -> iron.draw(spriteBatch));
         mineBuildings.forEach(mineMachine -> mineMachine.draw(spriteBatch));
+        asteroidTurrets.forEach(asteroidTurret -> asteroidTurret.draw(spriteBatch));
 
         if (notGameOver())
             ship.draw(spriteBatch);
@@ -214,6 +238,8 @@ public class TowerDefenseGame extends Game {
         screenTextManager.draw();
 
         spriteBatch.end();
+
+        mineLaserManager.draw();
     }
 
     @Override
@@ -240,16 +266,18 @@ public class TowerDefenseGame extends Game {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
                     asteroid.damage();
                     laser.destroy();
-                    if (asteroid.isDestroyed()) {
-                        score += asteroid.getScore();
-                        screenTextManager.changeText("score", String.format("Score: %s", score));
-                    }
                 }
             });
 
             mineBuildings.forEach(mineBuilding -> {
                 if (asteroid.getRectangleCollider().overlaps(mineBuilding.getCollider())) {
                     mineBuilding.damage();
+                    asteroid.damageMax();
+                }
+            });
+            asteroidTurrets.forEach(asteroidTurret -> {
+                if (asteroid.getRectangleCollider().overlaps(asteroidTurret.getCollider())) {
+                    asteroidTurret.damage();
                     asteroid.damageMax();
                 }
             });
@@ -323,20 +351,32 @@ public class TowerDefenseGame extends Game {
     }
 
     private void buildMineBuilding() {
-        if (iron < MINER_COST || !canMine || isSpotTaken(ship.getPos()))
+        if (iron < MINE_BUILDING_COST || !canMine || isSpotTaken(ship.getPos()))
             return;
 
-        removeIron(MINER_COST);
+        removeIron(MINE_BUILDING_COST);
         mineBuildings.add(new MineBuilding(textures, ship.getPos(), worldTextManager));
+    }
+
+    private void buildAsteroidTurret() {
+        if (iron < ASTEROID_TURRET_COST || isSpotTaken(ship.getPos()))
+            return;
+
+        removeIron(ASTEROID_TURRET_COST);
+        asteroidTurrets.add(new AsteroidTurret(textures, ship.getPos(), worldTextManager,
+                                               asteroids, mineLaserManager));
     }
 
     private boolean isSpotTaken(Vector2 pos) {
         Point point = Point.fromPos(pos);
 
-        for (MineBuilding mineBuilding : mineBuildings) {
-            if (mineBuilding.getPoint().equals(point)) {
+        for (Building mineBuilding : mineBuildings) {
+            if (mineBuilding.getPoint().equals(point))
                 return true;
-            }
+        }
+        for (Building building : asteroidTurrets) {
+            if (building.getPoint().equals(point))
+                return true;
         }
         return false;
     }
