@@ -29,6 +29,6 @@ public class MineBuilding extends Building implements Miner {
 
     @Override
     protected int getInitialHealth() {
-        return 3;
+        return 1;
     }
 }

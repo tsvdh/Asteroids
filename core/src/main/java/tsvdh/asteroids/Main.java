@@ -68,8 +68,11 @@ public class Main extends ApplicationAdapter {
         for (FileHandle child : file.list()) {
             if (child.isDirectory())
                 loadTextures(child);
-            else if (child.extension().equals("png"))
-                textures.put(child.path(), new Texture(child));
+            else if (child.extension().equals("png")) {
+                var texture = new Texture(child);
+                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+                textures.put(child.path(), texture);
+            }
         }
     }
 }

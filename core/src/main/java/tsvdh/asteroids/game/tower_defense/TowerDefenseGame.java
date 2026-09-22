@@ -3,7 +3,6 @@ package tsvdh.asteroids.game.tower_defense;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -20,9 +19,9 @@ import tsvdh.asteroids.logic.Laser;
 import tsvdh.asteroids.logic.RectangularGameObject;
 import tsvdh.asteroids.logic.Ship;
 import tsvdh.asteroids.util.PersistentDataManager;
-import tsvdh.asteroids.util.text_manager.Text;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
 import tsvdh.asteroids.util.text_manager.RelativeTextManager;
+import tsvdh.asteroids.util.text_manager.Text;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -238,8 +237,6 @@ public class TowerDefenseGame extends Game {
     @Override
     protected void draw() {
         ScreenUtils.clear(Color.BLACK);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         Vector2 cameraPos = clampToWorld(ship.getPos(), (CAMERA_SIZE / 2) - 100);
         viewPort.getCamera().position.set(new Vector3(cameraPos, 0));
@@ -298,9 +295,9 @@ public class TowerDefenseGame extends Game {
                 }
             });
 
-            getAllBuildings().forEach(mineBuilding -> {
-                if (asteroid.getRectangleCollider().overlaps(mineBuilding.getCollider())) {
-                    mineBuilding.damage();
+            getAllBuildings().forEach(building -> {
+                if (asteroid.getRectangleCollider().overlaps(building.getCollider())) {
+                    building.damage();
                     asteroid.damageMax();
                 }
             });
@@ -312,16 +309,24 @@ public class TowerDefenseGame extends Game {
                 alien.damageMax();
             }
 
+            turretLasers.forEach(laser -> {
+                if (alien.getCollider().overlaps(laser.getCollider())) {
+                    alien.damage();
+                    laser.destroy();
+                }
+            });
+
             shipLasers.forEach(laser -> {
                 if (alien.getCollider().overlaps(laser.getCollider())) {
                     alien.damageMax();
                     laser.destroy();
                 }
             });
-            turretLasers.forEach(laser -> {
-                if (alien.getCollider().overlaps(laser.getCollider())) {
-                    alien.damage();
-                    laser.destroy();
+
+            getAllBuildings().forEach(building -> {
+                if (alien.getRectangleCollider().overlaps(building.getCollider())) {
+                    building.damage();
+                    alien.damageMax();
                 }
             });
         });
@@ -336,9 +341,10 @@ public class TowerDefenseGame extends Game {
         if (isDimensionOutOfBounds(gameObject.getPos().x)
             || isDimensionOutOfBounds(gameObject.getPos().y))
         {
-            if (gameObject instanceof Ship)
+            if (gameObject instanceof Ship) {
+                ship.resetMovement();
                 damageShip();
-            else if (gameObject instanceof Damageable)
+            } else if (gameObject instanceof Damageable)
                 ((Damageable) gameObject).damageMax();
             else
                 gameObject.destroy();
@@ -353,7 +359,8 @@ public class TowerDefenseGame extends Game {
 
     @Override
     public boolean gameShouldExit() {
-        return false;
+        return gameOverInstant != null
+            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 10000;
     }
 
     @Override

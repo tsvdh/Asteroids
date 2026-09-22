@@ -16,7 +16,7 @@ public class AsteroidTurret extends ShootingBuilding {
 
     public AsteroidTurret(Map<String, Texture> textures, Vector2 pos, AbsoluteTextManager textManager,
                           Collection<ToughAsteroid> asteroids, MineLaserManager mineLaserManager) {
-        super(textures, pos, textManager, Duration.ofMillis(200), asteroids, 200);
+        super(textures, pos, textManager, Duration.ofMillis(200), asteroids, 300);
         this.mineLaserManager = mineLaserManager;
     }
 

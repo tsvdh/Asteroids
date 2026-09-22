@@ -35,7 +35,7 @@ public class DefenseTurret extends ShootingBuilding {
 
     @Override
     void onShot(GameObject target) {
-        var laser = new Laser(textures, getPos(), Duration.ofMillis(500));
+        var laser = new Laser(textures, getPos(), Duration.ofMillis(1000));
         laser.setMovement(target.getPos().cpy().sub(getPos()).setLength(500));
         turretLasers.add(laser);
     }

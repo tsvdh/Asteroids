@@ -100,7 +100,7 @@
       - Health 1
     - Asteroid turret
       - Shoot instant lasers 
-      - Damage within 200m
+      - Damage within 300m
       - 200ms cooldown
       - Health 2
     - Defense turret
@@ -108,6 +108,7 @@
       - Shoot lasers
         - 1 sec lifetime
         - 500m/s
+        - 300m range
       - Health 3
   - Aliens
     - speed 150m/s

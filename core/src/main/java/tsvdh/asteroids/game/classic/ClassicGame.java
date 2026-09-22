@@ -229,7 +229,7 @@ public class ClassicGame extends Game {
     @Override
     public boolean gameShouldExit() {
         return gameOverInstant != null
-            && Duration.between(gameOverInstant, Instant.now()).toMillis() > 5000;
+            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 5000;
     }
 
     @Override
