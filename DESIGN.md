@@ -92,3 +92,9 @@
     - size: 60
     - spawn: 2/s
     - health: 3
+  - Buildings
+    - Snap to grid (100 between points)
+    - Miner
+      - '1' to build, cost 10
+      - Miner rate 0.5/sec
+      - Health 3

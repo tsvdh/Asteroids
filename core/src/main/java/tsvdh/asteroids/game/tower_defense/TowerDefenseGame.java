@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.tower_defense.buildings.MineBuilding;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
@@ -33,22 +34,25 @@ public class TowerDefenseGame extends Game {
     private static float CAMERA_SIZE = ZOOM_LEVELS[STARTING_ZOOM];
     private int currentZoom;
 
+    private static final int MINER_COST = 1;
+
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
     private final Collection<BorderGenerator.Border> borders = new LinkedList<>();
     private final Collection<RectangularGameObject> ironPatches = new LinkedList<>();
     private final Collection<ToughAsteroid> asteroids = new LinkedList<>();
     private AsteroidSpawner asteroidSpawner;
+    private final Collection<MineBuilding> mineBuildings = new LinkedList<>();
 
     private GameObject worldBackground;
     private GameObject outOfBoundsBackground;
     private BorderGenerator borderGenerator;
 
-    private int lives;
     private int score;
     private float iron;
     private Instant gameOverInstant;
     boolean canMine;
+
 
     private AbsoluteTextManager worldTextManager;
     private RelativeTextManager screenTextManager;
@@ -94,19 +98,18 @@ public class TowerDefenseGame extends Game {
                 return "assets/iron.png";
             }
         };
-        iron.setSize(200);
-        iron.setPos(new Vector2(WORLD_SIZE / 2 + 200, WORLD_SIZE / 2));
+        iron.setSize(1000);
+        iron.setPos(new Vector2(500, 500));
 
         ironPatches.add(iron);
-
     }
 
     @Override
     public void create() {
         super.create();
         currentZoom = STARTING_ZOOM;
-        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2), Duration.ofMillis(500));
-        lives = 5;
+        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
+                        Duration.ofMillis(500), 5);
 
         borderGenerator = new BorderGenerator(textures, WORLD_SIZE, 500);
         borders.addAll(borderGenerator.makeBorderParts());
@@ -117,13 +120,13 @@ public class TowerDefenseGame extends Game {
         asteroidSpawner = new AsteroidSpawner(WORLD_SIZE, Duration.ofMillis(2000));
 
         worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
-        worldTextManager.addFont("normal", Color.WHITE, 30);
+        worldTextManager.addFont("building", Color.BLACK, 20);
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
         screenTextManager.addFont("warning_big", Color.RED, 0.1f);
         float textMargin = 0.02f;
-        screenTextManager.addText("lives", String.format("Lives: %s", lives),
+        screenTextManager.addText("lives", String.format("Lives: %s", ship.getHealth()),
                                   new Vector2(textMargin, 1 - textMargin),
                                   "normal", Text.AlignMode.RIGHT_DOWN);
         screenTextManager.addText("iron", "Iron: 0",
@@ -160,7 +163,10 @@ public class TowerDefenseGame extends Game {
             zoomIn();
 
         if (Gdx.input.isKeyPressed(Input.Keys.M) && canMine)
-            mine();
+            addIron(ship.mine());
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
+            buildMineBuilding();
     }
 
     @Override
@@ -171,11 +177,14 @@ public class TowerDefenseGame extends Game {
         asteroidSpawner.spawn(asteroids, textures);
         asteroids.forEach(Asteroid::logic);
 
+        mineBuildings.forEach(mineMachine -> addIron(mineMachine.mine()));
+
         handleCollisions();
         handleOutOfBounds();
 
         shipLasers.removeIf(GameObject::isDestroyed);
         asteroids.removeIf(GameObject::isDestroyed);
+        mineBuildings.removeIf(GameObject::isDestroyed);
     }
 
     @Override
@@ -192,6 +201,7 @@ public class TowerDefenseGame extends Game {
         worldBackground.draw(spriteBatch);
 
         ironPatches.forEach(iron -> iron.draw(spriteBatch));
+        mineBuildings.forEach(mineMachine -> mineMachine.draw(spriteBatch));
 
         if (notGameOver())
             ship.draw(spriteBatch);
@@ -208,7 +218,7 @@ public class TowerDefenseGame extends Game {
 
     @Override
     protected boolean gameOver() {
-        return lives <= 0;
+        return ship.getHealth() <= 0;
     }
 
     @Override
@@ -218,22 +228,29 @@ public class TowerDefenseGame extends Game {
 
         canMine = false;
         ironPatches.forEach(patch -> {
-            if (patch.getCollider().contains(ship.getPos()))
+            if (patch.getCollider().contains(ship.getCollider()))
                 canMine = true;
         });
 
         asteroids.forEach(asteroid -> {
             if (asteroid.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable())
-                destroyShip();
+                damageShip();
 
             shipLasers.forEach(laser -> {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
-                    asteroid.destroy();
+                    asteroid.damage();
                     laser.destroy();
                     if (asteroid.isDestroyed()) {
                         score += asteroid.getScore();
                         screenTextManager.changeText("score", String.format("Score: %s", score));
                     }
+                }
+            });
+
+            mineBuildings.forEach(mineBuilding -> {
+                if (asteroid.getRectangleCollider().overlaps(mineBuilding.getCollider())) {
+                    mineBuilding.damage();
+                    asteroid.damageMax();
                 }
             });
         });
@@ -249,7 +266,9 @@ public class TowerDefenseGame extends Game {
             || isDimensionOutOfBounds(gameObject.getPos().y))
         {
             if (gameObject instanceof Ship)
-                destroyShip();
+                damageShip();
+            else if (gameObject instanceof Damageable)
+                ((Damageable) gameObject).damageMax();
             else
                 gameObject.destroy();
         }
@@ -279,15 +298,18 @@ public class TowerDefenseGame extends Game {
         return clamped;
     }
 
-    void mine() {
-        iron += 1 * Gdx.graphics.getDeltaTime();
+    void addIron(float extraIron) {
+        iron += extraIron;
         screenTextManager.changeText("iron", String.format("Iron: %.1f", iron));
     }
 
-    private void destroyShip() {
-        lives--;
-        screenTextManager.changeText("lives", String.format("Lives: %s", lives));
-        ship.destroy();
+    void removeIron(float iron) {
+        addIron(-iron);
+    }
+
+    private void damageShip() {
+        ship.damage();
+        screenTextManager.changeText("lives", String.format("Lives: %s", ship.getHealth()));
         ship.setPos(clampToWorld(ship.getPos(), 100));
 
         if (gameOver()) {
@@ -298,5 +320,24 @@ public class TowerDefenseGame extends Game {
             dataManager.data.towerDefenseScore = Math.max(score, dataManager.data.towerDefenseScore);
             dataManager.write();
         }
+    }
+
+    private void buildMineBuilding() {
+        if (iron < MINER_COST || !canMine || isSpotTaken(ship.getPos()))
+            return;
+
+        removeIron(MINER_COST);
+        mineBuildings.add(new MineBuilding(textures, ship.getPos(), worldTextManager));
+    }
+
+    private boolean isSpotTaken(Vector2 pos) {
+        Point point = Point.fromPos(pos);
+
+        for (MineBuilding mineBuilding : mineBuildings) {
+            if (mineBuilding.getPoint().equals(point)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -4,13 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import tsvdh.asteroids.game.tower_defense.Damageable;
+import tsvdh.asteroids.game.tower_defense.Miner;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 
-public class Ship extends RoundGameObject {
+public class Ship extends RoundGameObject implements Miner, Damageable {
 
     private static final float SIZE = 30;
 
@@ -18,18 +20,21 @@ public class Ship extends RoundGameObject {
     private boolean thrust;
 
     private Instant lastDeath;
-    private Duration shootInterval;
+    private final Duration shootInterval;
     private Instant lastShot;
 
-    public Ship(Map<String, Texture> textures, Vector2 pos, Duration shootInterval) {
+    int health;
+
+    public Ship(Map<String, Texture> textures, Vector2 pos, Duration shootInterval, int health) {
         super(textures);
-        setPos(pos);
         setSize(SIZE);
+        setPos(pos);
         thrustTexture = textures.get("assets/ship_with_thrust.png");
         thrust = false;
         lastDeath = Instant.EPOCH;
         this.shootInterval = shootInterval;
         lastShot = Instant.EPOCH;
+        this.health = health;
     }
 
     @Override
@@ -84,10 +89,7 @@ public class Ship extends RoundGameObject {
 
     @Override
     public void destroy() {
-        setMovement(new Vector2(0, 0));
-        forward = new Vector2(0, 1);
-        sprite.setRotation(0);
-        lastDeath = Instant.now();
+        throw new UnsupportedOperationException();
     }
 
     public boolean isVulnerable() {
@@ -101,5 +103,32 @@ public class Ship extends RoundGameObject {
 
         int blinkTime = timeSinceDeath < 1000 ? 300 : 150;
         return (timeSinceDeath / blinkTime) % 2 == 0;
+    }
+
+    @Override
+    public float mine() {
+        return 1 * Gdx.graphics.getDeltaTime();
+    }
+
+    @Override
+    public void damage() {
+        health--;
+        if (health > 0) {
+            setMovement(new Vector2(0, 0));
+            forward = new Vector2(0, 1);
+            sprite.setRotation(0);
+            lastDeath = Instant.now();
+        } else {
+            super.destroy();
+        }
+    }
+
+    @Override
+    public void damageMax() {
+        throw new UnsupportedOperationException();
+    }
+
+    public int getHealth() {
+        return health;
     }
 }

@@ -6,7 +6,7 @@ import tsvdh.asteroids.logic.Asteroid;
 
 import java.util.Map;
 
-public class ToughAsteroid extends Asteroid {
+public class ToughAsteroid extends Asteroid implements Damageable {
 
     private int health;
 
@@ -17,8 +17,19 @@ public class ToughAsteroid extends Asteroid {
 
     @Override
     public void destroy() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void damage() {
         health--;
         if (health == 0)
             super.destroy();
+    }
+
+    @Override
+    public void damageMax() {
+        while (health > 0)
+            damage();
     }
 }

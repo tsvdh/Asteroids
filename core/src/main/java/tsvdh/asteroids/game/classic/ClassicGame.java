@@ -34,7 +34,6 @@ public class ClassicGame extends Game {
     private final Collection<Alien> aliens = new LinkedList<>();
     private final Collection<Laser> alienLasers = new LinkedList<>();
 
-    private int lives;
     private int score;
     private Instant gameOverInstant;
 
@@ -57,9 +56,9 @@ public class ClassicGame extends Game {
     @Override
     public void create() {
         super.create();
-        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2), Duration.ofMillis(200));
+        ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
+                        Duration.ofMillis(200), 3);
         ship.setForward(new Vector2(0, 1));
-        lives = 3;
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
 
@@ -67,7 +66,7 @@ public class ClassicGame extends Game {
         screenTextManager.addFont("warning", Color.RED, 0.1f);
 
         float textMargin = 0.02f;
-        screenTextManager.addText("lives", String.format("Lives: %s", lives),
+        screenTextManager.addText("lives", String.format("Lives: %s", ship.getHealth()),
                                   new Vector2(textMargin, 1 - textMargin),
                                   "normal", Text.AlignMode.RIGHT_DOWN);
         screenTextManager.addText("score", "Score: 0",
@@ -114,7 +113,7 @@ public class ClassicGame extends Game {
 
         asteroids.forEach(asteroid -> {
             if (asteroid.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable())
-                destroyShip();
+                damageShip();
 
             shipLasers.forEach(laser -> {
                 if (asteroid.getCollider().overlaps(laser.getCollider())) {
@@ -150,11 +149,11 @@ public class ClassicGame extends Game {
         });
         alienLasers.forEach(alienLaser -> {
             if (alienLaser.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable())
-                destroyShip();
+                damageShip();
         });
         aliens.forEach(alien -> {
             if (alien.getCollider().overlaps(ship.getCollider()) && ship.isVulnerable())
-                destroyShip();
+                damageShip();
         });
 
         asteroids.addAll(newAsteroids);
@@ -186,10 +185,9 @@ public class ClassicGame extends Game {
         alienLasers.forEach(this::handleOutOfBounds);
     }
 
-    private void destroyShip() {
-        lives--;
-        screenTextManager.changeText("lives", String.format("Lives: %s", lives));
-        ship.destroy();
+    private void damageShip() {
+        ship.damage();
+        screenTextManager.changeText("lives", String.format("Lives: %s", ship.getHealth()));
         ship.setPos(new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2));
 
         if (gameOver()) {
@@ -225,7 +223,7 @@ public class ClassicGame extends Game {
 
     @Override
     protected boolean gameOver() {
-        return lives <= 0;
+        return ship.getHealth() <= 0;
     }
 
     @Override

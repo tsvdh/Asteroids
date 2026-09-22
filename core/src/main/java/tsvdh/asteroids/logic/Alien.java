@@ -16,8 +16,8 @@ public class Alien extends RoundGameObject {
 
     public Alien(Map<String, Texture> textures, Vector2 pos) {
         super(textures);
-        setPos(pos);
         setSize(SIZE);
+        setPos(pos);
         lastShot = Instant.now();
     }
 
