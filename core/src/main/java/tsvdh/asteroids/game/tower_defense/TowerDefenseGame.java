@@ -219,11 +219,10 @@ public class TowerDefenseGame extends Game {
         handleOutOfBounds();
 
         asteroids.forEach(asteroid -> {
-            if (asteroid.isDestroyed()) {
+            if (asteroid.isDestroyed() && asteroid.addsToScore())
                 score += asteroid.getScore();
-                screenTextManager.changeText("score", String.format("Score: %s", score));
-            }
         });
+        screenTextManager.changeText("score", String.format("Score: %s", score));
 
         shipLasers.removeIf(GameObject::isDestroyed);
         asteroids.removeIf(GameObject::isDestroyed);

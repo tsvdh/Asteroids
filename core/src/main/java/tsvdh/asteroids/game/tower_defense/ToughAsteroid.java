@@ -9,10 +9,12 @@ import java.util.Map;
 public class ToughAsteroid extends Asteroid implements Damageable {
 
     private int health;
+    private boolean addsToScore;
 
     public ToughAsteroid(Map<String, Texture> textures, Vector2 pos, int type, int health) {
         super(textures, pos, type);
         this.health = health;
+        addsToScore = true;
     }
 
     @Override
@@ -29,7 +31,12 @@ public class ToughAsteroid extends Asteroid implements Damageable {
 
     @Override
     public void damageMax() {
+        addsToScore = false;
         while (health > 0)
             damage();
+    }
+
+    public boolean addsToScore() {
+        return addsToScore;
     }
 }
