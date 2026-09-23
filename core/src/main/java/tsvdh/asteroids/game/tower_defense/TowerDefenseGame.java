@@ -60,6 +60,7 @@ public class TowerDefenseGame extends Game {
 
     private int score;
     private float iron;
+    private float total_iron;
     private Instant gameOverInstant;
     private boolean canMine;
     private boolean buildMode;
@@ -210,7 +211,7 @@ public class TowerDefenseGame extends Game {
         asteroidSpawner.spawn(textures);
         asteroids.forEach(Asteroid::logic);
 
-        alienManager.spawn(textures, score);
+        alienManager.spawn(textures, score, total_iron);
         alienManager.retarget();
 
         mineBuildings.forEach(mineMachine -> addIron(mineMachine.mine()));
@@ -226,6 +227,7 @@ public class TowerDefenseGame extends Game {
                 score += asteroid.getScore();
         });
         screenTextManager.changeText("score", String.format("Score: %s", score));
+        screenTextManager.changeText("iron", String.format("Iron: %.1f", iron));
 
         shipLasers.removeIf(GameObject::isDestroyed);
         asteroids.removeIf(GameObject::isDestroyed);
@@ -380,11 +382,11 @@ public class TowerDefenseGame extends Game {
 
     void addIron(float extraIron) {
         iron += extraIron;
-        screenTextManager.changeText("iron", String.format("Iron: %.1f", iron));
+        total_iron += extraIron;
     }
 
-    void removeIron(float iron) {
-        addIron(-iron);
+    void removeIron(float extraIron) {
+        iron -= extraIron;
     }
 
     private void damageShip() {

@@ -116,7 +116,8 @@
       - Health 3
   - Aliens
     - speed 150m/s
-    - scale from min to max intensity based on score
-      - min: score 0, interval 1min, amount 1
-      - max: score 10000, interval 1sec, amount 10
+    - scale from min to max intensity based on score and iron mined
+      - total_score: score + 10 * total_iron 
+      - min: total_score 0, interval 1min, amount 1
+      - max: total_score 10000, interval 1sec, amount 10
     - health 5 (only one laser from ship)
