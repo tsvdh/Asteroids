@@ -42,4 +42,8 @@ public class DefenseTurret extends ShootingBuilding {
         turretLasers.add(laser);
         movingElement.setForward(shootDir);
     }
+
+    public static int getCost() {
+        return 30;
+    }
 }

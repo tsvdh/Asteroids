@@ -73,8 +73,8 @@ public class Ship extends RoundGameObject implements Miner, Damageable {
 
     @Override
     public void logic() {
-        getMovement().scl(1f - 0.1f * Gdx.graphics.getDeltaTime());
         super.logic();
+        getMovement().scl(1f - 0.1f * Gdx.graphics.getDeltaTime());
     }
 
     public void shootLaser(Collection<Laser> shipLasers, Map<String, Texture> textures) {

@@ -31,7 +31,7 @@
   - Spaceship with movement and physics
     - Momentum decays over time
     - Lose a life when hit
-      - 5 lives
+      - 2 lives
       - Reset away from border
       - Respawn timer
     - Camera follows ship 
@@ -87,6 +87,8 @@
   - ship same as classic, except:
     - shoot interval: 500ms
   - Mining speed: 1/sec
+  - Building mode: 'b'
+    - No physics movement
   - Asteroids spawn randomly on boundary
     - speed: 200m/s
     - size: 60
@@ -95,15 +97,17 @@
   - Buildings
     - Snap to grid (100 between points)
     - Miner
-      - '1' to build, cost 10
+      - 'j' to build, cost 10
       - Miner rate 0.5/sec
       - Health 1
     - Asteroid turret
+      - 'k' to build, cost 20
       - Shoot instant lasers 
       - Damage within 300m
       - 200ms cooldown
       - Health 2
     - Defense turret
+      - 'k' to build, cost 30
       - 50ms cooldown
       - Shoot lasers
         - 1 sec lifetime

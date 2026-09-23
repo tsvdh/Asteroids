@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import tsvdh.asteroids.game.tower_defense.Damageable;
-import tsvdh.asteroids.game.tower_defense.Point;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.RectangularGameObject;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;

@@ -42,4 +42,8 @@ public class MineBuilding extends Building implements Miner {
         curRotation = (curRotation + rotationSpeed * 360 * Gdx.graphics.getDeltaTime()) % 360;
         movingElement.setRotation(curRotation);
     }
+
+    public static int getCost() {
+        return 10;
+    }
 }

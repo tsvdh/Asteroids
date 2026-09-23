@@ -58,4 +58,8 @@ public class AsteroidTurret extends ShootingBuilding {
         asteroid.damage();
         mineLaserManager.addLine(getPos(), asteroid.getPos().cpy());
     }
+
+    public static int getCost() {
+        return 20;
+    }
 }

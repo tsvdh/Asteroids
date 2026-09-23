@@ -1,4 +1,4 @@
-package tsvdh.asteroids.game.tower_defense;
+package tsvdh.asteroids.game.tower_defense.buildings;
 
 import com.badlogic.gdx.math.Vector2;
 

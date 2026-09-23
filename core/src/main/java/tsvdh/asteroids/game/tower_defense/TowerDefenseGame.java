@@ -13,6 +13,7 @@ import tsvdh.asteroids.game.tower_defense.buildings.Building;
 import tsvdh.asteroids.game.tower_defense.buildings.DefenseTurret;
 import tsvdh.asteroids.game.tower_defense.buildings.MineBuilding;
 import tsvdh.asteroids.game.tower_defense.buildings.MineLaserManager;
+import tsvdh.asteroids.game.tower_defense.buildings.Point;
 import tsvdh.asteroids.logic.Asteroid;
 import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.Laser;
@@ -39,10 +40,6 @@ public class TowerDefenseGame extends Game {
     private static float CAMERA_SIZE = ZOOM_LEVELS[STARTING_ZOOM];
     private int currentZoom;
 
-    private static final int MINE_BUILDING_COST = 1;
-    private static final int ASTEROID_TURRET_COST = 1;
-    private static final int DEFENSE_TURRET_COST = 1;
-
     private Ship ship;
     private final Collection<Laser> shipLasers = new LinkedList<>();
     private final Collection<BorderGenerator.Border> borders = new LinkedList<>();
@@ -64,7 +61,8 @@ public class TowerDefenseGame extends Game {
     private int score;
     private float iron;
     private Instant gameOverInstant;
-    boolean canMine;
+    private boolean canMine;
+    private boolean buildMode;
 
     private MineLaserManager mineLaserManager;
 
@@ -137,7 +135,8 @@ public class TowerDefenseGame extends Game {
         super.create();
         currentZoom = STARTING_ZOOM;
         ship = new Ship(textures, new Vector2(WORLD_SIZE / 2, WORLD_SIZE / 2),
-                        Duration.ofMillis(500), 5);
+                        Duration.ofMillis(500), 2);
+        buildMode = false;
 
         borderGenerator = new BorderGenerator(textures, WORLD_SIZE, 500);
         borders.addAll(borderGenerator.makeBorderParts());
@@ -186,7 +185,13 @@ public class TowerDefenseGame extends Game {
 
     @Override
     protected void input() {
-        standardInput(ship, shipLasers);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.B))
+            buildMode = !buildMode;
+
+        if (buildMode)
+            buildInput();
+        else
+            standardInput(ship, shipLasers);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.LEFT_BRACKET))
             zoomOut();
@@ -195,13 +200,6 @@ public class TowerDefenseGame extends Game {
 
         if (Gdx.input.isKeyPressed(Input.Keys.M) && canMine)
             addIron(ship.mine());
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1))
-            buildMineBuilding();
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2))
-            buildAsteroidTurret();
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3))
-            buildDefenseTurret();
     }
 
     @Override
@@ -405,27 +403,27 @@ public class TowerDefenseGame extends Game {
     }
 
     private void buildMineBuilding() {
-        if (iron < MINE_BUILDING_COST || !canMine || isSpotTaken(ship.getPos()))
+        if (iron < MineBuilding.getCost() || !canMine || isSpotTaken(ship.getPos()))
             return;
 
-        removeIron(MINE_BUILDING_COST);
+        removeIron(MineBuilding.getCost());
         mineBuildings.add(new MineBuilding(textures, ship.getPos(), worldTextManager));
     }
 
     private void buildAsteroidTurret() {
-        if (iron < ASTEROID_TURRET_COST || isSpotTaken(ship.getPos()))
+        if (iron < AsteroidTurret.getCost() || isSpotTaken(ship.getPos()))
             return;
 
-        removeIron(ASTEROID_TURRET_COST);
+        removeIron(AsteroidTurret.getCost());
         asteroidTurrets.add(new AsteroidTurret(textures, ship.getPos(), worldTextManager,
                                                asteroids, mineLaserManager));
     }
 
     private void buildDefenseTurret() {
-        if (iron < DEFENSE_TURRET_COST || isSpotTaken(ship.getPos()))
+        if (iron < DefenseTurret.getCost() || isSpotTaken(ship.getPos()))
             return;
 
-        removeIron(DEFENSE_TURRET_COST);
+        removeIron(DefenseTurret.getCost());
         defenseTurrets.add(new DefenseTurret(textures, ship.getPos(), worldTextManager,
                                              aliens, turretLasers));
     }
@@ -438,5 +436,27 @@ public class TowerDefenseGame extends Game {
                 return true;
         }
         return false;
+    }
+
+    private void buildInput() {
+        Vector2 movement = new Vector2(0, 0);
+
+        if (Gdx.input.isKeyPressed(Input.Keys.W))
+            movement.add(new Vector2(0, 1));
+        if (Gdx.input.isKeyPressed(Input.Keys.A))
+            movement.add(new Vector2(-1, 0));
+        if (Gdx.input.isKeyPressed(Input.Keys.S))
+            movement.add(new Vector2(0, -1));
+        if (Gdx.input.isKeyPressed(Input.Keys.D))
+            movement.add(new Vector2(1, 0));
+
+        ship.setMovement(movement.setLength(150));
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J))
+            buildMineBuilding();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K))
+            buildAsteroidTurret();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L))
+            buildDefenseTurret();
     }
 }
