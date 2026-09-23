@@ -87,10 +87,6 @@ public abstract class Building extends RectangularGameObject implements Damageab
 
     protected abstract String getDetailTextureName();
 
-    public GameObject getMovingElement() {
-        return movingElement;
-    }
-
     @Override
     public void draw(SpriteBatch batch) {
         super.draw(batch);

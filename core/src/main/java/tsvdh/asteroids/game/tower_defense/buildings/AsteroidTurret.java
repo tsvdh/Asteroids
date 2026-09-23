@@ -24,7 +24,7 @@ public class AsteroidTurret extends ShootingBuilding {
         super(textures, pos, textManager, Duration.ofMillis(200), asteroids, 300);
         this.mineLaserManager = mineLaserManager;
         spinDuration = Duration.ofMillis(1000);
-        rotationSpeed = 5f;
+        rotationSpeed = 3f;
         curRotation = 0;
     }
 
@@ -45,7 +45,10 @@ public class AsteroidTurret extends ShootingBuilding {
         if (Duration.between(lastShot, Instant.now()).compareTo(spinDuration) >= 0)
             return;
 
-        curRotation = (curRotation + rotationSpeed * 360 * Gdx.graphics.getDeltaTime()) % 360;
+        float speedFraction = 1 - (float) Duration.between(lastShot, Instant.now()).toMillis() / spinDuration.toMillis();
+        float curRotationSpeed = rotationSpeed * speedFraction;
+
+        curRotation = (curRotation + curRotationSpeed * 360 * Gdx.graphics.getDeltaTime()) % 360;
         movingElement.setRotation(curRotation);
     }
 
