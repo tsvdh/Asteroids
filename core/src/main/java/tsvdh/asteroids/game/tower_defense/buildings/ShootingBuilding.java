@@ -13,7 +13,7 @@ import java.util.Map;
 abstract class ShootingBuilding extends Building {
 
     private final Duration coolDown;
-    private Instant lastShot;
+    Instant lastShot;
     private final Collection<? extends GameObject> targets;
     private final float range;
 

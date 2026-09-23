@@ -30,18 +30,16 @@ public class DefenseTurret extends ShootingBuilding {
 
     @Override
     protected String getDetailTextureName() {
-        return "";
-    }
-
-    @Override
-    public String getTextureName() {
         return "assets/buildings/defense_turret.png";
     }
 
     @Override
     void onShot(GameObject target) {
+        Vector2 shootDir = target.getPos().cpy().sub(getPos()).nor();
+
         var laser = new Laser(textures, getPos(), Duration.ofMillis(1000));
-        laser.setMovement(target.getPos().cpy().sub(getPos()).setLength(500));
+        laser.setMovement(shootDir.setLength(500));
         turretLasers.add(laser);
+        movingElement.setForward(shootDir);
     }
 }

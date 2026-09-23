@@ -1,11 +1,11 @@
 package tsvdh.asteroids.game.tower_defense.buildings;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import tsvdh.asteroids.game.tower_defense.Damageable;
 import tsvdh.asteroids.game.tower_defense.Point;
+import tsvdh.asteroids.logic.GameObject;
 import tsvdh.asteroids.logic.RectangularGameObject;
 import tsvdh.asteroids.util.text_manager.AbsoluteTextManager;
 import tsvdh.asteroids.util.text_manager.Text;
@@ -20,8 +20,7 @@ public abstract class Building extends RectangularGameObject implements Damageab
     private int health;
     private AbsoluteTextManager textManager;
     private int id;
-    Texture detailTexture;
-    Sprite detailSprite;
+    GameObject movingElement;
 
     protected Building(Map<String, Texture> textures, Vector2 pos, AbsoluteTextManager textManager) {
         super(textures);
@@ -33,10 +32,15 @@ public abstract class Building extends RectangularGameObject implements Damageab
         this.textManager = textManager;
         textManager.addText(getTextId(), String.valueOf(health),
                             getPos().cpy().add(new Vector2(40, 40)), "building", Text.AlignMode.LEFT_DOWN);
-        detailTexture = textures.get(getDetailTextureName());
-        detailSprite = makeSprite(detailTexture);
-        detailSprite.setScale(100);
-        detailSprite.setCenter(getPos().x, getPos().y);
+
+        movingElement = new GameObject(textures) {
+            @Override
+            public String getTextureName() {
+                return getDetailTextureName();
+            }
+        };
+        movingElement.setSize(100);
+        movingElement.setPos(getPos());
     }
 
     @Override
@@ -76,15 +80,20 @@ public abstract class Building extends RectangularGameObject implements Damageab
         return String.format("building-%s", id);
     }
 
+    @Override
+    public String getTextureName() {
+        return "assets/buildings/building_background.png";
+    }
+
     protected abstract String getDetailTextureName();
 
-    public Sprite getDetailSprite() {
-        return detailSprite;
+    public GameObject getMovingElement() {
+        return movingElement;
     }
 
     @Override
     public void draw(SpriteBatch batch) {
         super.draw(batch);
-        detailSprite.draw(batch);
+        movingElement.draw(batch);
     }
 }

@@ -22,11 +22,6 @@ public class MineBuilding extends Building implements Miner {
     }
 
     @Override
-    public String getTextureName() {
-        return "assets/buildings/miner_background.png";
-    }
-
-    @Override
     public float mine() {
         return mineSpeed * Gdx.graphics.getDeltaTime();
     }
@@ -45,6 +40,6 @@ public class MineBuilding extends Building implements Miner {
     public void logic() {
         super.logic();
         curRotation = (curRotation + rotationSpeed * 360 * Gdx.graphics.getDeltaTime()) % 360;
-        getDetailSprite().setRotation(curRotation);
+        movingElement.setRotation(curRotation);
     }
 }
