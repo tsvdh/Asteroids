@@ -29,6 +29,11 @@ public class DefenseTurret extends ShootingBuilding {
     }
 
     @Override
+    protected String getDetailTextureName() {
+        return "";
+    }
+
+    @Override
     public String getTextureName() {
         return "assets/buildings/defense_turret.png";
     }

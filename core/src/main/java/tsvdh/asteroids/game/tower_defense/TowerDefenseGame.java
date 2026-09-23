@@ -151,7 +151,7 @@ public class TowerDefenseGame extends Game {
         mineLaserManager = new MineLaserManager(viewPort);
 
         worldTextManager = new AbsoluteTextManager(spriteBatch, "assets/fonts/Connection.ttf");
-        worldTextManager.addFont("building", Color.BLACK, 20);
+        worldTextManager.addFont("building", Color.WHITE, 20);
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
@@ -216,8 +216,7 @@ public class TowerDefenseGame extends Game {
         alienManager.retarget();
 
         mineBuildings.forEach(mineMachine -> addIron(mineMachine.mine()));
-        asteroidTurrets.forEach(AsteroidTurret::logic);
-        defenseTurrets.forEach(DefenseTurret::logic);
+        getAllBuildings().forEach(Building::logic);
         turretLasers.forEach(Laser::logic);
         aliens.forEach(Alien::logic);
 

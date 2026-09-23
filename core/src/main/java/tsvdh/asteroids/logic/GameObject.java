@@ -20,7 +20,7 @@ public abstract class GameObject {
 
     public GameObject(Map<String, Texture> textures) {
         texture = textures.get(getTextureName());
-        sprite = getSprite(texture);
+        sprite = makeSprite(texture);
         movement = new Vector2();
     }
 
@@ -52,7 +52,7 @@ public abstract class GameObject {
         return destroyed;
     }
 
-    private Sprite getSprite(Texture texture) {
+    protected Sprite makeSprite(Texture texture) {
         Sprite sprite = new Sprite(texture);
         float ratio = sprite.getHeight() / sprite.getWidth();
         sprite.setSize(1, ratio);

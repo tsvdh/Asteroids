@@ -26,6 +26,11 @@ public class AsteroidTurret extends ShootingBuilding {
     }
 
     @Override
+    protected String getDetailTextureName() {
+        return "";
+    }
+
+    @Override
     public String getTextureName() {
         return "assets/buildings/asteroid_turret.png";
     }
