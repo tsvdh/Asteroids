@@ -114,16 +114,22 @@ public class TowerDefenseGame extends Game {
     }
 
     private void makeIronPatches() {
-        var iron = new RectangularGameObject(textures) {
-            @Override
-            public String getTextureName() {
-                return "assets/iron.png";
-            }
-        };
-        iron.setSize(1000);
-        iron.setPos(new Vector2(500, 500));
+        Point start = new Point(12, 9);
 
-        ironPatches.add(iron);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                var iron = new RectangularGameObject(textures) {
+                    @Override
+                    public String getTextureName() {
+                        return "assets/iron.png";
+                    }
+                };
+                iron.setSize(100);
+                Point curPoint = new Point(start.x() + i, start.y() + j);
+                iron.setPos(curPoint.toPos());
+                ironPatches.add(iron);
+            }
+        }
     }
 
     @Override
@@ -279,7 +285,7 @@ public class TowerDefenseGame extends Game {
 
         canMine = false;
         ironPatches.forEach(patch -> {
-            if (patch.getCollider().contains(ship.getCollider()))
+            if (patch.getCollider().overlaps(ship.getRectangleCollider()))
                 canMine = true;
         });
 
