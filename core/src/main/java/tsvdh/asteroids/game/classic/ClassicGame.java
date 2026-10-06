@@ -59,8 +59,6 @@ public class ClassicGame extends Game {
                         Duration.ofMillis(200), 3);
         ship.setForward(new Vector2(0, 1));
 
-
-
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
 
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
@@ -82,6 +80,9 @@ public class ClassicGame extends Game {
 
     @Override
     protected void logic() {
+        if (gameOver())
+            return;
+
         ship.logic();
         shipLasers.forEach(Laser::logic);
 
@@ -107,9 +108,6 @@ public class ClassicGame extends Game {
 
     @Override
     protected void handleCollisions() {
-        if (gameOver())
-            return;
-
         Collection<Asteroid> newAsteroids = new LinkedList<>();
 
         asteroids.forEach(asteroid -> {

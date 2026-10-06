@@ -154,8 +154,10 @@ public class TowerDefenseGame extends Game {
         worldTextManager.addFont("building", Color.WHITE, 20);
 
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
+
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
         screenTextManager.addFont("warning_big", Color.RED, 0.1f);
+
         float textMargin = 0.02f;
         screenTextManager.addText("lives", String.format("Lives: %s", ship.getHealth()),
                                   new Vector2(textMargin, 1 - textMargin),
@@ -205,6 +207,9 @@ public class TowerDefenseGame extends Game {
 
     @Override
     protected void logic() {
+        if (gameOver())
+            return;
+        
         ship.logic();
         shipLasers.forEach(Laser::logic);
 
@@ -279,9 +284,6 @@ public class TowerDefenseGame extends Game {
 
     @Override
     protected void handleCollisions() {
-        if (gameOver())
-            return;
-
         canMine = false;
         ironPatches.forEach(patch -> {
             if (patch.getCollider().overlaps(ship.getRectangleCollider()))
