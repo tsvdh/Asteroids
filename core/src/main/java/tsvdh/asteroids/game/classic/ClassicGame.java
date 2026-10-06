@@ -59,10 +59,12 @@ public class ClassicGame extends Game {
                         Duration.ofMillis(200), 3);
         ship.setForward(new Vector2(0, 1));
 
+
+
         screenTextManager = new RelativeTextManager(spriteBatch, "assets/fonts/Connection.ttf", viewPort);
 
         screenTextManager.addFont("normal", Color.WHITE, 0.05f);
-        screenTextManager.addFont("warning", Color.RED, 0.1f);
+        screenTextManager.addFont("warning_big", Color.RED, 0.1f);
 
         float textMargin = 0.02f;
         screenTextManager.addText("lives", String.format("Lives: %s", ship.getHealth()),
@@ -194,7 +196,7 @@ public class ClassicGame extends Game {
             gameOverInstant = Instant.now();
             screenTextManager.addText("gameOver", "Game over",
                                       new Vector2(0.5f, 0.5f),
-                                      "warning", Text.AlignMode.CENTERED);
+                                      "warning_big", Text.AlignMode.CENTERED);
             dataManager.data.classicScore = Math.max(score, dataManager.data.classicScore);
             dataManager.write();
         }
@@ -229,7 +231,7 @@ public class ClassicGame extends Game {
     @Override
     public boolean gameShouldExit() {
         return gameOverInstant != null
-            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 5000;
+            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 5;
     }
 
     @Override

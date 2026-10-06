@@ -364,7 +364,7 @@ public class TowerDefenseGame extends Game {
     @Override
     public boolean gameShouldExit() {
         return gameOverInstant != null
-            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 10000;
+            && Duration.between(gameOverInstant, Instant.now()).toSeconds() > 10;
     }
 
     @Override

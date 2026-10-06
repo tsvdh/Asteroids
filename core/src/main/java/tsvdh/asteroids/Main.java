@@ -4,11 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import tsvdh.asteroids.game.MainMenu;
-import tsvdh.asteroids.util.PersistentDataManager;
-import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.Game;
+import tsvdh.asteroids.game.MainMenu;
+import tsvdh.asteroids.game.classic.ClassicGame;
 import tsvdh.asteroids.game.tower_defense.TowerDefenseGame;
+import tsvdh.asteroids.util.PersistentDataManager;
 
 import java.util.HashMap;
 import java.util.Map;
